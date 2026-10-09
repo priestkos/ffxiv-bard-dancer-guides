@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two Paths — Bard &amp; Dancer, Dawntrail</title>
+<style>
+:root{
+  /* neutral */
+  --ink:#050506;
+  --ink2:#0d0d0f;
+  --paper:#f2f3f2;
+  --dim:#8b8d8b;
+  --line:rgba(255,255,255,.12);
+  /* bard */
+  --b-deep:#04130b;
+  --b-jade:#1c6b45;
+  --b-emerald:#2fbf71;
+  --b-glow:#7dffb4;
+  --b-mist:#bfe9d2;
+  /* dancer */
+  --d-deep:#150407;
+  --d-crimson:#7e1024;
+  --d-scarlet:#e0324a;
+  --d-glow:#ff93a6;
+  --d-warm:#ffd0d7;
+  --sans:"Segoe UI",system-ui,-apple-system,sans-serif;
+  --serif:Georgia,"Times New Roman",serif;
+  --mono:Consolas,"Cascadia Mono",ui-monospace,monospace;
+  --split:50%;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--sans);
+  font-size:16px;line-height:1.7;overflow-x:hidden}
+svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--b-emerald);color:#04130b}
+.wrap{width:min(1240px,90vw);margin-inline:auto}
+
+#grain{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.05;mix-blend-mode:overlay}
+.progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:70;
+  background:linear-gradient(90deg,var(--b-emerald),#c9b06a,var(--d-scarlet))}
+
+/* topbar */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:65;display:flex;align-items:center;
+  justify-content:space-between;padding:14px clamp(16px,4vw,40px);border-bottom:1px solid transparent;
+  transition:background .4s,backdrop-filter .4s,border-color .4s}
+.topbar.on{background:rgba(5,5,6,.84);backdrop-filter:blur(14px);border-bottom-color:var(--line)}
+.brand{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.34em;text-transform:uppercase;color:var(--dim)}
+.brand b{font-weight:400;
+  background:linear-gradient(90deg,var(--b-glow),var(--d-glow));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.navlinks{display:flex;gap:6px}
+.navlinks a{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
+  padding:8px 13px;border:1px solid transparent;border-radius:999px;color:var(--dim);transition:.25s}
+.navlinks a:hover{color:var(--paper);border-color:var(--line);background:rgba(255,255,255,.05)}
+.navlinks a.g:hover{color:var(--b-glow);border-color:rgba(47,191,113,.4)}
+.navlinks a.r:hover{color:var(--d-glow);border-color:rgba(224,50,74,.4)}
+
+/* ============ HERO DIPTYCH ============ */
+.hero{position:relative;min-height:100svh;overflow:hidden;display:block}
+.half{position:absolute;top:0;bottom:0;display:flex;flex-direction:column;justify-content:flex-end;
+  padding:0 clamp(20px,4vw,54px) clamp(40px,8vh,74px);transition:width .55s cubic-bezier(.2,.8,.2,1),
+  left .55s cubic-bezier(.2,.8,.2,1);overflow:hidden}
+.half.left{left:0;width:var(--split);background:
+  radial-gradient(70% 70% at 82% 78%, rgba(47,191,113,.28), transparent 62%),
+  linear-gradient(180deg,var(--b-deep),#020a06)}
+.half.right{left:var(--split);right:0;background:
+  radial-gradient(70% 70% at 18% 78%, rgba(224,50,74,.30), transparent 62%),
+  linear-gradient(180deg,var(--d-deep),#0a0203)}
+.half .art{position:absolute;inset:0;opacity:.85;pointer-events:none}
+.half.left .art{display:grid;place-items:center}
+.half.right .art{display:grid;place-items:center}
+.half .art svg{width:min(120vh,120vw);height:min(120vh,120vw)}
+.hr{fill:none;stroke:rgba(125,255,180,.20)}
+.hr.b{stroke:rgba(47,191,113,.45)}
+.dr{fill:none;stroke:rgba(255,147,166,.18)}
+.dr.b{stroke:rgba(224,50,74,.5)}
+.spin{animation:spin 150s linear infinite;transform-origin:50% 50%}
+.spin.r{animation:spin 190s linear infinite reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+.dashA{stroke-dasharray:14 240;animation:trace 10s linear infinite}
+.dashB{stroke-dasharray:10 300;animation:trace 15s linear infinite reverse}
+@keyframes trace{to{stroke-dashoffset:-254}}
+.half .inner{position:relative;z-index:2;max-width:min(520px,44vw)}
+@media(max-width:900px){.half .inner{max-width:none}}
+.half .tagline{font-family:var(--mono);font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;margin-bottom:14px}
+.half.left .tagline{color:var(--b-emerald)}
+.half.right .tagline{color:var(--d-scarlet)}
+.half h2{font-family:var(--serif);font-weight:400;margin:0 0 10px;font-size:clamp(2.4rem,6vw,4.6rem);
+  line-height:.95;letter-spacing:-.03em}
+.half.left h2{background:linear-gradient(160deg,#fff,var(--b-mist) 40%,var(--b-emerald));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.half.right h2{background:linear-gradient(160deg,#fff,var(--d-warm) 40%,var(--d-scarlet));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.half .role{font-family:var(--serif);font-style:italic;font-size:clamp(1rem,1.7vw,1.25rem);margin-bottom:12px}
+.half.left .role{color:var(--b-mist)}
+.half.right .role{color:var(--d-warm)}
+.half p{color:var(--dim);font-size:.95rem;margin:0 0 22px;max-width:46ch}
+.half.left p{color:#b8d6c4}
+.navlinks a.g,.navlinks a.r{color:#c9cbc9}
+.navlinks a.g:hover{color:var(--b-glow);border-color:rgba(47,191,113,.5)}
+.navlinks a.r:hover{color:var(--d-glow);border-color:rgba(224,50,74,.5)}
+.half.right p{color:#d7a8b1}
+.cta{display:inline-flex;align-items:center;gap:12px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.24em;text-transform:uppercase;padding:13px 22px;border:1px solid;border-radius:999px;transition:.3s}
+.half.left .cta{border-color:rgba(47,191,113,.45);color:var(--b-glow)}
+.half.left:hover .cta{background:rgba(47,191,113,.14);border-color:var(--b-glow)}
+.half.right .cta{border-color:rgba(224,50,74,.45);color:var(--d-glow)}
+.half.right:hover .cta{background:rgba(224,50,74,.16);border-color:var(--d-glow)}
+.cta .arw{transition:transform .3s}
+.half:hover .cta .arw{transform:translateX(5px)}
+
+.seam{position:absolute;top:0;bottom:0;left:var(--split);width:1px;z-index:4;pointer-events:none;
+  transition:left .55s cubic-bezier(.2,.8,.2,1);
+  background:linear-gradient(180deg,transparent,rgba(255,255,255,.34),transparent);
+  box-shadow:0 0 44px 7px rgba(255,255,255,.09)}
+.seam::after{content:"";position:absolute;left:-60px;right:-60px;top:0;bottom:0;
+  background:linear-gradient(90deg,transparent,rgba(125,255,180,.15) 40%,transparent 49%,transparent 51%,rgba(255,147,166,.15) 60%,transparent)}
+
+.hero-title{position:absolute;inset:0;z-index:5;display:grid;place-items:center;
+  pointer-events:none;text-align:center;padding:0 18px}
+.hero-title .box{opacity:0;animation:rise 1.1s .35s cubic-bezier(.2,.8,.2,1) forwards}
+.hero-title .kick{font-family:var(--mono);font-size:10.5px;letter-spacing:.5em;text-transform:uppercase;
+  color:rgba(255,255,255,.6);margin-bottom:16px}
+.hero-title h1{font-family:var(--serif);font-weight:400;margin:0;line-height:.9;letter-spacing:-.045em;
+  font-size:clamp(3rem,11vw,10rem);
+  background:linear-gradient(100deg,var(--b-glow) 8%,#ffffff 48%,var(--d-glow) 92%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 0 80px rgba(255,255,255,.14)}
+.hero-title .sub{margin-top:14px;font-family:var(--mono);font-size:11px;letter-spacing:.28em;
+  text-transform:uppercase;color:rgba(255,255,255,.55)}
+.hint{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:6;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(255,255,255,.4);opacity:0;animation:rise 1s 1.1s forwards;pointer-events:none}
+@keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+@media(max-width:900px){
+  .hero{min-height:auto}
+  .half{position:relative;left:auto!important;width:auto!important;min-height:64svh;padding-top:120px}
+  .half.right{left:auto}
+  .seam{display:none}
+  .hero-title{position:relative;padding:60px 18px 40px;inset:auto;order:-1}
+  .hero{display:flex;flex-direction:column}
+  .hint{display:none}
+}
+
+/* band */
+.band{border-block:1px solid var(--line);overflow:hidden;padding:15px 0;background:var(--ink2)}
+.marquee{display:flex;white-space:nowrap;width:max-content;animation:slide 52s linear infinite}
+.marquee span{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--dim);padding:0 24px}
+.marquee span.g{color:var(--b-emerald)}
+.marquee span.r{color:var(--d-scarlet)}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* sections */
+section.blk{padding:clamp(80px,12vh,140px) 0;position:relative}
+.hd{display:grid;grid-template-columns:auto 1fr;gap:clamp(18px,3vw,44px);align-items:start;margin-bottom:clamp(34px,6vh,60px)}
+.hd .num{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--dim);padding-top:14px}
+.hd h2{font-family:var(--serif);font-weight:400;margin:0;letter-spacing:-.02em;font-size:clamp(2rem,5vw,3.8rem);line-height:1.03}
+.hd .lede{margin-top:18px;max-width:64ch;color:#c9cbc9;font-size:clamp(1rem,1.5vw,1.1rem)}
+@media(max-width:720px){.hd{grid-template-columns:1fr}.hd .num{padding-top:0}}
+.rv{opacity:0;transform:translateY(30px);transition:opacity .9s cubic-bezier(.2,.8,.2,1),transform .9s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+/* choose cards */
+.choose{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--line);border:1px solid var(--line)}
+@media(max-width:900px){.choose{grid-template-columns:1fr}}
+.card{position:relative;padding:clamp(30px,4vw,48px);min-height:400px;display:flex;flex-direction:column;
+  justify-content:space-between;overflow:hidden;transition:.45s ease}
+.card.b{background:linear-gradient(165deg,#03130b,#071c12)}
+.card.d{background:linear-gradient(165deg,#150407,#25080d)}
+.card:hover{transform:translateY(-3px)}
+.card .glow{position:absolute;width:420px;height:420px;border-radius:50%;filter:blur(60px);opacity:.4;
+  right:-120px;top:-120px;transition:.6s ease;pointer-events:none}
+.card.b .glow{background:radial-gradient(circle,rgba(47,191,113,.7),transparent 65%)}
+.card.d .glow{background:radial-gradient(circle,rgba(224,50,74,.7),transparent 65%)}
+.card:hover .glow{opacity:.7}
+.card .idx{font-family:var(--mono);font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;position:relative;z-index:2}
+.card.b .idx{color:var(--b-emerald)}
+.card.d .idx{color:var(--d-scarlet)}
+.card h3{font-family:var(--serif);font-weight:400;margin:14px 0 6px;font-size:clamp(2rem,4.6vw,3rem);
+  letter-spacing:-.03em;position:relative;z-index:2}
+.card.b h3{background:linear-gradient(150deg,#fff,var(--b-mist) 45%,var(--b-emerald));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.card.d h3{background:linear-gradient(150deg,#fff,var(--d-warm) 45%,var(--d-scarlet));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.card .sub{font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+  position:relative;z-index:2;margin-bottom:20px}
+.card.b .sub{color:var(--b-glow)}
+.card.d .sub{color:var(--d-glow)}
+.card p{position:relative;z-index:2;font-size:.96rem;margin:0 0 26px;max-width:44ch}
+.card.b p{color:#a9c9b7}
+.card.d p{color:#d7a8b1}
+.card ul{position:relative;z-index:2;list-style:none;margin:0 0 30px;padding:0;display:grid;gap:9px}
+.card li{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--dim);padding-left:20px;position:relative}
+.card li::before{content:"—";position:absolute;left:0}
+.card.b li::before{color:var(--b-emerald)}
+.card.d li::before{color:var(--d-scarlet)}
+.card .go{position:relative;z-index:2;display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+  padding:13px 22px;border:1px solid;border-radius:999px;align-self:flex-start;transition:.3s}
+.card.b .go{border-color:rgba(47,191,113,.45);color:var(--b-glow)}
+.card.d .go{border-color:rgba(224,50,74,.45);color:var(--d-glow)}
+.card.b:hover .go{background:rgba(47,191,113,.15)}
+.card.d:hover .go{background:rgba(224,50,74,.17)}
+
+/* role traits */
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--line);border:1px solid var(--line)}
+@media(max-width:880px){.trio{grid-template-columns:1fr}}
+.tc{background:var(--ink2);padding:clamp(24px,3vw,36px)}
+.tc .ix{font-family:var(--mono);font-size:10px;letter-spacing:.28em;text-transform:uppercase;margin-bottom:12px}
+.tc:nth-child(1) .ix{color:var(--b-emerald)}
+.tc:nth-child(2) .ix{color:#c9b06a}
+.tc:nth-child(3) .ix{color:var(--d-scarlet)}
+.tc h4{margin:0 0 10px;font-family:var(--serif);font-weight:400;font-size:1.25rem}
+.tc p{margin:0;color:#c0c2c0;font-size:.94rem}
+
+/* contents comparison */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--line);border:1px solid var(--line)}
+@media(max-width:880px){.two{grid-template-columns:1fr}}
+.two .col{background:var(--ink2);padding:clamp(26px,3vw,40px)}
+.two .col.b{border-top:2px solid var(--b-emerald)}
+.two .col.d{border-top:2px solid var(--d-scarlet)}
+.two h3{margin:0 0 20px;font-family:var(--serif);font-weight:400;font-size:1.5rem}
+.two .col.b h3{color:var(--b-glow)}
+.two .col.d h3{color:var(--d-glow)}
+.two ul{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.two li{padding:12px 0 12px 26px;position:relative;border-bottom:1px solid rgba(255,255,255,.07);
+  font-size:.92rem;color:#c0c2c0}
+.two li:last-child{border-bottom:none}
+.two li::before{position:absolute;left:0;top:12px;font-family:var(--mono);font-size:10px}
+.two .col.b li::before{content:"◆";color:var(--b-emerald)}
+.two .col.d li::before{content:"◆";color:var(--d-scarlet)}
+.two li b{color:var(--paper);font-weight:400}
+
+/* pull quote */
+.pull{max-width:74ch;font-family:var(--serif);font-size:clamp(1.3rem,3vw,2.1rem);line-height:1.4;
+  margin:0 auto;text-align:center}
+.pull em{font-style:italic}
+.pull .g{color:var(--b-glow)}
+.pull .r{color:var(--d-glow)}
+
+footer{border-top:1px solid var(--line);padding:clamp(50px,8vh,88px) 0 44px;background:var(--ink2)}
+.fgrid{display:grid;grid-template-columns:1fr auto;gap:34px;align-items:end}
+@media(max-width:760px){.fgrid{grid-template-columns:1fr}}
+.fmark{font-family:var(--serif);font-size:clamp(2rem,7vw,4.4rem);line-height:.95;letter-spacing:-.03em;
+  background:linear-gradient(100deg,var(--b-emerald),#c9b06a 50%,var(--d-scarlet));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.fmeta{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);
+  display:flex;flex-direction:column;gap:10px;align-items:flex-end;text-align:right}
+@media(max-width:760px){.fmeta{align-items:flex-start;text-align:left}}
+.fmeta a{border-bottom:1px solid var(--line);padding-bottom:2px;transition:.3s}
+.fmeta a.b{color:var(--b-glow)}.fmeta a.d{color:var(--d-glow)}
+.fmeta a:hover{border-color:currentColor}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
+  .rv{opacity:1;transform:none}
+  html{scroll-behavior:auto}
+}
+/* ---- legibility pass + seam alignment ---- */
+.brand{font-size:12px;color:#a8aaa8}
+.navlinks{display:flex;justify-content:flex-end;align-items:center;gap:10px}
+.navlinks a{font-size:11.5px;border:1px solid rgba(255,255,255,.16);background:rgba(5,5,6,.72);padding:8px 15px;border-radius:999px}
+@keyframes riseCenter{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%)}}
+.hint{animation:riseCenter 1s 1.1s forwards}
+.half .tagline{font-size:11.5px}
+.half p{font-size:.97rem}
+.topbar{gap:26px}
+.hero-title .box{background:radial-gradient(62% 72% at 50% 50%,rgba(3,3,4,.80),rgba(3,3,4,.38) 58%,transparent 79%);padding:22px 46px 26px;border-radius:30px}
+.hero-title h1{display:flex;justify-content:center;align-items:baseline;gap:.32em}
+.hero-title h1 .w{background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-title h1 .w.g{background-image:linear-gradient(118deg,#ffffff,var(--b-glow) 58%,var(--b-emerald))}
+.hero-title h1 .w.r{background-image:linear-gradient(118deg,#ffffff,var(--d-glow) 58%,var(--d-scarlet))}
+.hero-title .kick{font-size:11.5px;letter-spacing:.34em;color:rgba(255,255,255,.78)}
+.hero-title .sub{margin-top:22px;font-size:11.5px;color:rgba(255,255,255,.72)}
+.hint{font-size:10.5px;color:rgba(255,255,255,.74)}
+.half.right .tagline{color:var(--d-glow)}
+.card li{font-size:11.5px}
+.card p{font-size:.97rem}
+</style>
+</head>
+<body>
+
+<svg id="grain" aria-hidden="true"><filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#g)"/></svg>
+<div class="progress" id="prog"></div>
+
+<header class="topbar" id="bar">
+  <a class="brand" href="#top"><span>✦</span><b>TWO&nbsp;PATHS</b><span>BRD&nbsp;/&nbsp;DNC</span></a>
+  <nav class="navlinks">
+    <a class="g" href="bard-guide.html">Bard</a>
+    <a class="r" href="dancer-guide.html">Dancer</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ============ HERO DIPTYCH ============ -->
+<section class="hero" id="top">
+  <a class="half left" href="bard-guide.html" aria-label="Bard — The Resonance Archive">
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 400 400">
+        <g class="spin">
+          <circle class="hr" cx="200" cy="200" r="64"/>
+          <circle class="hr b" cx="200" cy="200" r="102" stroke-dasharray="2 7"/>
+          <circle class="hr" cx="200" cy="200" r="156"/>
+        </g>
+        <g class="spin r">
+          <circle class="hr" cx="200" cy="200" r="132" stroke-dasharray="1 11"/>
+          <circle class="hr b" cx="200" cy="200" r="180" stroke-dasharray="3 9"/>
+        </g>
+      </svg>
+    </div>
+    <div class="inner">
+      <div class="tagline">01 · Green</div>
+      <h2>Bard</h2>
+      <div class="role">The Resonance Archive</div>
+      <p>Three songs, two poisons, one twenty-second window. A DoT job with the raid's damage riding on its back, and a rotation that never stops moving.</p>
+      <span class="cta">Enter the Archive <span class="arw">→</span></span>
+    </div>
+  </a>
+
+  <a class="half right" href="dancer-guide.html" aria-label="Dancer — The Ember Waltz">
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 600 600">
+        <path class="dr dashA" d="M-40 380 C 130 200, 250 520, 400 300 S 620 120, 680 260" stroke-width="1.1"/>
+        <path class="dr b dashB" d="M-40 300 C 120 460, 260 140, 420 330 S 600 480, 700 340" stroke-width="1.1"/>
+        <path class="dr" d="M-40 450 C 150 330, 240 560, 420 400 S 620 320, 700 420"/>
+        <path class="dr" d="M-40 200 C 140 300, 260 60, 430 200 S 640 260, 700 160"/>
+      </svg>
+    </div>
+    <div class="inner">
+      <div class="tagline">02 · Red</div>
+      <h2>Dancer</h2>
+      <div class="role">The Ember Waltz</div>
+      <p>The lowest personal damage on the board and the strongest force multiplier in it. Every step is a loan you call in during the burst.</p>
+      <span class="cta">Enter the Waltz <span class="arw">→</span></span>
+    </div>
+  </a>
+
+  <div class="seam" id="seam" aria-hidden="true"></div>
+
+  <div class="hero-title">
+    <div class="box">
+      <div class="kick">Final Fantasy XIV · Dawntrail 7.x</div>
+      <h1><span class="w g">Two</span><span class="w r">Paths</span></h1>
+      <div class="sub">The complete physical ranged guides</div>
+    </div>
+  </div>
+  <div class="hint" id="hint">Move across the seam — choose a side</div>
+</section>
+
+<div class="band" aria-hidden="true">
+  <div class="marquee" id="mq">
+    <span class="g">Stormbite</span><span class="r">Technical Finish</span><span class="g">Iron Jaws</span><span class="r">Devilment</span><span class="g">Radiant Finale</span><span class="r">Dance of the Dawn</span><span class="g">Empyreal Arrow</span><span class="r">Finishing Move</span><span class="g">Resonant Arrow</span><span class="r">Last Dance</span><span class="g">Barrage</span><span class="r">Saber Dance</span><span class="g">Pitch Perfect</span><span class="r">Starfall Dance</span><span class="g">Apex Arrow</span><span class="r">Tillana</span>
+  </div>
+</div>
+
+<!-- ============ CHOOSE ============ -->
+<section class="blk" id="choose">
+  <div class="wrap">
+    <div class="hd rv">
+      <div class="num">01</div>
+      <div>
+        <h2>Choose a Path</h2>
+        <p class="lede">Two jobs, one role, opposite instincts. Bard rewards rigid timer discipline and a single perfectly-timed snapshot. Dancer rewards resource hoarding and a twenty-second detonation. Both are strongest when the person behind them has stopped thinking about the buttons.</p>
+      </div>
+    </div>
+
+    <div class="choose rv">
+      <a class="card b" href="bard-guide.html">
+        <div class="glow" aria-hidden="true"></div>
+        <div>
+          <div class="idx">Guide 01 · Green</div>
+          <h3>Bard</h3>
+          <div class="sub">The Resonance Archive</div>
+          <p>An eleven-button opener built to land one thing above all: Iron Jaws inside the final second of the buff window, carrying multiplied poison ticks for the next forty-five seconds.</p>
+          <ul>
+            <li>Song cycle &amp; the 3-second Repertoire tick</li>
+            <li>The full 25-second opener, GCD by GCD</li>
+            <li>Standard 3-3-12 vs advanced 3-6-9</li>
+            <li>Priority ladders, AoE swaps, level-sync floors</li>
+          </ul>
+        </div>
+        <span class="go">Open the Bard guide →</span>
+      </a>
+
+      <a class="card d" href="dancer-guide.html">
+        <div class="glow" aria-hidden="true"></div>
+        <div>
+          <div class="idx">Guide 02 · Red</div>
+          <h3>Dancer</h3>
+          <div class="sub">The Ember Waltz</div>
+          <p>A fifteen-second pre-pull and a single GCD where Last Dance and Finishing Move must resolve in the right order — or 540 potency quietly disappears.</p>
+          <ul>
+            <li>Dance steps, Esprit and the 1.5s weave lock</li>
+            <li>The pre-pull countdown and burst table</li>
+            <li>The 30 / 60 / 120 cadence &amp; filler matrix</li>
+            <li>Dance Partner tiers, gearing, raid utility</li>
+          </ul>
+        </div>
+        <span class="go">Open the Dancer guide →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE ROLE ============ -->
+<section class="blk" id="role">
+  <div class="wrap">
+    <div class="hd rv">
+      <div class="num">02</div>
+      <div>
+        <h2>The Shared Inheritance</h2>
+        <p class="lede">Everything Bard and Dancer have in common comes from being Physical Ranged: no cast times, total freedom of movement, and a two-minute raid buff that other jobs plan their own bursts around.</p>
+      </div>
+    </div>
+
+    <div class="trio rv">
+      <div class="tc">
+        <div class="ix">Movement</div>
+        <h4>Nothing stops you casting</h4>
+        <p>Neither job has a cast time. You reposition through mechanics without losing a single GCD — which means the only excuse for a dropped global is your own attention.</p>
+      </div>
+      <div class="tc">
+        <div class="ix">Cadence</div>
+        <h4>A 120-second spine</h4>
+        <p>Both live on the two-minute cycle: Bard's Raging Strikes and Radiant Finale, Dancer's Technical Finish and Devilment. The rest of the job exists to feed that window.</p>
+      </div>
+      <div class="tc">
+        <div class="ix">Contribution</div>
+        <h4>Paid in other people's damage</h4>
+        <p>Both carry low personal ceilings and unmatched raid buffs. Your parse lives and dies on how well the party converts the window you hand them.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INSIDE ============ -->
+<section class="blk" id="inside">
+  <div class="wrap">
+    <div class="hd rv">
+      <div class="num">03</div>
+      <div><h2>What's Inside</h2></div>
+    </div>
+
+    <div class="two rv">
+      <div class="col b">
+        <h3>Bard — Resonance Archive</h3>
+        <ul>
+          <li><b>Core mechanics</b> — Repertoire ticks, DoT snapshotting, the Coda sacrifice</li>
+          <li><b>The opener</b> — pre-pull, consumable logic, all eleven GCDs with weaves</li>
+          <li><b>Execution nuances</b> — proc collision, Pitch Perfect, defensive mapping</li>
+          <li><b>Song cycle</b> — 43 / 34 / 43 and reading the swap points</li>
+          <li><b>3-6-9 vs 3-3-12</b> — the Skill Speed gate and when each rotation wins</li>
+          <li><b>Priority ladders</b> — single target and Wanderer's Minuet oGCDs</li>
+          <li><b>Wide Volley</b> — AoE swaps and the inverted gauge priority</li>
+          <li><b>Synced floors</b> — level 50 and 70 openers, plus field notes</li>
+        </ul>
+      </div>
+      <div class="col d">
+        <h3>Dancer — Ember Waltz</h3>
+        <ul>
+          <li><b>Core mechanics</b> — dance steps, Esprit, feathers, the 1.5s weave constraint</li>
+          <li><b>Level 90 → 100</b> — Last Dance, Finishing Move, Dance of the Dawn, Tillana normalised</li>
+          <li><b>The opener</b> — the −15.5s pre-pull and the full burst table</li>
+          <li><b>When the pull goes wrong</b> — short countdowns, delayed bursts, latency weaving</li>
+          <li><b>The cadence</b> — 30 / 60 / 120 and what each clock demands</li>
+          <li><b>Filler priority matrix</b> — nine ranks, sorted by cost of failure</li>
+          <li><b>Closed Position</b> — partner tiers, swapping, verification</li>
+          <li><b>Gearing &amp; utility</b> — stat ladder, Ultimate syncs, raid mitigation</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUOTE ============ -->
+<section class="blk">
+  <div class="wrap">
+    <p class="pull rv">One job asks you to hold a <span class="g">timer</span>. The other asks you to hold your <span class="r">nerve</span>. Pick the one whose failure mode you can live with.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap fgrid">
+    <div class="fmark">Two Paths</div>
+    <div class="fmeta">
+      <span>Physical Ranged · Dawntrail 7.x · Level 100</span>
+      <a class="b" href="bard-guide.html">Bard — The Resonance Archive →</a>
+      <a class="d" href="dancer-guide.html">Dancer — The Ember Waltz →</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* progress + topbar */
+  var prog = document.getElementById("prog"), bar = document.getElementById("bar");
+  function onScroll(){
+    var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+    var p = max > 0 ? (h.scrollTop||document.body.scrollTop)/max : 0;
+    prog.style.width = (p*100).toFixed(2)+"%";
+    bar.classList.toggle("on", (h.scrollTop||0) > 40);
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  onScroll();
+
+  /* reveals */
+  var rvs = document.querySelectorAll(".rv");
+  if ("IntersectionObserver" in window && !reduce){
+    var io = new IntersectionObserver(function(en){
+      en.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, {threshold:0.12, rootMargin:"0px 0px -8% 0px"});
+    rvs.forEach(function(el,i){ el.style.transitionDelay = ((i%3)*80)+"ms"; io.observe(el); });
+  } else { rvs.forEach(function(el){ el.classList.add("in"); }); }
+
+  /* pointer-driven seam — desktop only, disabled for reduced motion */
+  var hero = document.querySelector(".hero"), hint = document.getElementById("hint");
+  if (hero && !reduce && window.matchMedia("(pointer:fine)").matches && window.innerWidth > 900){
+    hero.addEventListener("pointermove", function(ev){
+      var r = hero.getBoundingClientRect();
+      var x = ((ev.clientX - r.left) / r.width) * 100;
+      x = Math.max(34, Math.min(66, x));
+      hero.style.setProperty("--split", x.toFixed(2) + "%");
+      if (hint) hint.style.opacity = "0";
+    });
+    hero.addEventListener("pointerleave", function(){
+      hero.style.setProperty("--split", "50%");
+    });
+  }
+
+  /* marquee seamless */
+  var mq = document.getElementById("mq");
+  if (mq){ mq.innerHTML += mq.innerHTML; }
+})();
+</script>
+</body>
+</html>

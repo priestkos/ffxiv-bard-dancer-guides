@@ -1,0 +1,13 @@
+# Research material — deliberately not published.
+# Only the three website files (plus this repo's README) are tracked.
+*.docx
+*.pdf
+Bard_Guide.md
+BRD_vs_DNC_Opener_Analysis.md
+Dancer_Complete_Guide.md
+Dancer_Core_Rotation_Guide.md
+Dancer_Guide.md
+Dancer_Partner_and_AoE_Guide.md
+ffxiv_bard_opener_guide.html
+dawntrail_dancer_opener_combat_guide.html
+sites/previews/

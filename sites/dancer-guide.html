@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dancer — The Ember Waltz</title>
+<style>
+:root{
+  --ink:#0b0305;
+  --ink2:#170608;
+  --wine:#260a0f;
+  --crimson:#7e1024;
+  --scarlet:#e0324a;
+  --ember:#ff6b52;
+  --glow:#ff93a6;
+  --paper:#fdeef1;
+  --dim:#b4858f;
+  --line:rgba(255,147,166,.16);
+  --sans:"Segoe UI",system-ui,-apple-system,sans-serif;
+  --serif:Georgia,"Times New Roman",serif;
+  --mono:Consolas,"Cascadia Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--sans);font-size:16px;line-height:1.7;overflow-x:hidden}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--scarlet);color:#1a0409}
+.wrap{width:min(1180px,90vw);margin-inline:auto}
+
+#grain{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.05;mix-blend-mode:overlay}
+#embers{position:fixed;inset:0;z-index:0;pointer-events:none}
+.progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:70;
+  background:linear-gradient(90deg,var(--crimson),var(--ember));box-shadow:0 0 12px var(--ember)}
+
+/* topbar */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:65;display:flex;align-items:center;
+  justify-content:space-between;padding:14px clamp(16px,4vw,40px);
+  transition:background .4s ease,backdrop-filter .4s ease,border-color .4s ease;border-bottom:1px solid transparent}
+.topbar.on{background:rgba(11,3,5,.82);backdrop-filter:blur(14px);border-bottom-color:var(--line)}
+.brand{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.34em;text-transform:uppercase;color:var(--dim)}
+.brand b{color:var(--glow);font-weight:400}
+.brand .sig{width:22px;height:22px;border:1px solid var(--line);border-radius:50%;display:grid;
+  place-items:center;color:var(--scarlet);font-size:9px}
+.navlinks{display:flex;gap:6px;align-items:center}
+.navlinks a{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
+  padding:8px 13px;border:1px solid transparent;border-radius:999px;color:var(--dim);transition:.25s ease}
+.navlinks a:hover{color:var(--glow);border-color:var(--line);background:rgba(224,50,74,.1)}
+.navlinks a.brd:hover{color:var(--glow);border-color:rgba(47,191,113,.35);background:rgba(47,191,113,.08)}
+
+/* rail — heat bars */
+.rail{position:fixed;right:26px;top:50%;transform:translateY(-50%);z-index:64;
+  display:flex;flex-direction:column;gap:14px;align-items:flex-end}
+.rail a{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--dim);opacity:.42;transition:.3s ease}
+.rail a .bar{width:16px;height:2px;background:var(--crimson);transition:.3s ease}
+.rail a:hover,.rail a.act{opacity:1;color:var(--glow)}
+.rail a.act .bar{width:30px;background:var(--ember);box-shadow:0 0 12px var(--ember)}
+@media(max-width:1080px){.rail{display:none}}
+
+/* hero */
+.hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;padding:0 0 clamp(52px,8vh,90px);overflow:hidden}
+.hero-layer{position:absolute;inset:0;z-index:1}
+.hero-glow{background:
+  radial-gradient(56% 60% at 78% 76%, rgba(224,50,74,.30), transparent 62%),
+  radial-gradient(46% 50% at 16% 20%, rgba(126,16,36,.42), transparent 66%),
+  radial-gradient(84% 72% at 52% 122%, rgba(255,107,82,.12), transparent 70%)}
+.hero-lines{opacity:.45;background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 96px);
+  mask-image:linear-gradient(180deg,transparent,#000 30%,#000 70%,transparent);
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 30%,#000 70%,transparent)}
+.hero-ribbons{display:grid;place-items:center;opacity:.9}
+.hero-ribbons svg{width:min(140vh,150vw);height:min(140vh,150vw);overflow:visible}
+.rib{fill:none;stroke-width:1.1;stroke-linecap:round}
+.dash{stroke-dasharray:14 220;animation:trace 9s linear infinite}
+.dash.b{stroke-dasharray:8 300;animation-duration:14s;animation-direction:reverse}
+@keyframes trace{to{stroke-dashoffset:-234}}
+.spot{position:absolute;width:660px;height:660px;left:0;top:0;z-index:2;pointer-events:none;border-radius:50%;
+  transform:translate(-50%,-50%);opacity:0;transition:opacity .6s ease;
+  background:radial-gradient(circle,rgba(255,107,82,.11),transparent 65%)}
+.hero:hover .spot{opacity:1}
+.hero-inner{position:relative;z-index:3;width:min(1180px,90vw);margin-inline:auto}
+.eyebrow{display:flex;align-items:center;gap:14px;font-family:var(--mono);font-size:11px;letter-spacing:.42em;
+  text-transform:uppercase;color:var(--ember);margin-bottom:20px;opacity:0;
+  animation:rise .9s .15s cubic-bezier(.2,.8,.2,1) forwards}
+.eyebrow .bar{width:56px;height:1px;background:linear-gradient(90deg,var(--ember),transparent)}
+h1.mega{font-family:var(--serif);font-weight:400;margin:0;font-size:clamp(4.4rem,17.5vw,15.5rem);
+  line-height:.82;letter-spacing:-.045em;
+  background:linear-gradient(168deg,#ffffff 6%,#ffd9de 30%,var(--scarlet) 74%,var(--crimson) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 0 90px rgba(224,50,74,.3);opacity:0;
+  animation:rise 1.1s .22s cubic-bezier(.2,.8,.2,1) forwards}
+.mega-sub{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 22px;margin-top:26px;opacity:0;
+  animation:rise 1s .45s cubic-bezier(.2,.8,.2,1) forwards}
+.mega-sub .lt{font-family:var(--mono);font-size:clamp(1.4rem,3vw,2.4rem);letter-spacing:.24em;
+  text-transform:uppercase;color:var(--glow)}
+.mega-sub .rule{flex:0 0 80px;height:1px;background:var(--line)}
+.mega-sub .tag{font-size:clamp(.9rem,1.5vw,1.05rem);color:#f3cdd4;max-width:52ch}
+.hero-stats{display:flex;flex-wrap:wrap;gap:38px;margin-top:44px;padding-top:26px;border-top:1px solid var(--line);
+  opacity:0;animation:rise 1s .65s cubic-bezier(.2,.8,.2,1) forwards}
+.hs{display:flex;flex-direction:column;gap:3px}
+.hs .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim)}
+.hs .v{font-family:var(--serif);font-size:clamp(1.3rem,2.4vw,1.9rem);color:var(--paper)}
+.scrollcue{position:absolute;right:clamp(16px,4vw,44px);bottom:28px;z-index:4;writing-mode:vertical-rl;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--dim);
+  display:flex;align-items:center;gap:14px;opacity:0;animation:rise 1s 1s forwards}
+.scrollcue i{display:block;width:1px;height:56px;background:linear-gradient(180deg,var(--ember),transparent);
+  animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.25}50%{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+
+/* band */
+.band{border-block:1px solid var(--line);background:linear-gradient(180deg,rgba(38,10,15,.55),transparent);
+  overflow:hidden;padding:16px 0;position:relative;z-index:3}
+.marquee{display:flex;white-space:nowrap;width:max-content;animation:slide 46s linear infinite}
+.marquee span{font-family:var(--mono);font-size:11.5px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--dim);padding:0 26px;position:relative}
+.marquee span::after{content:"◆";position:absolute;right:-4px;color:var(--scarlet);opacity:.6;font-size:7px;top:1px}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* sections */
+section.blk{position:relative;z-index:3;padding:clamp(78px,12vh,140px) 0}
+.hd{display:grid;grid-template-columns:auto 1fr;gap:clamp(18px,3vw,44px);align-items:start;margin-bottom:clamp(34px,6vh,64px)}
+.hd .num{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--ember);padding-top:14px}
+.hd h2{font-family:var(--serif);font-weight:400;margin:0;letter-spacing:-.02em;font-size:clamp(2rem,5.2vw,4.1rem);line-height:1.02}
+.hd .kicker{margin-top:14px;font-family:var(--mono);font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--dim);display:flex;gap:12px;align-items:center}
+.hd .kicker::before{content:"";width:34px;height:1px;background:var(--crimson)}
+.hd .lede{margin-top:20px;max-width:64ch;color:#f0c6cd;font-size:clamp(1rem,1.5vw,1.12rem)}
+@media(max-width:720px){.hd{grid-template-columns:1fr}.hd .num{padding-top:0}}
+.rv{opacity:0;transform:translateY(34px);transition:opacity .9s cubic-bezier(.2,.8,.2,1),transform .9s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+/* cards */
+.trio{display:grid;gap:2px;background:var(--line);border:1px solid var(--line);grid-template-columns:repeat(3,1fr)}
+@media(max-width:900px){.trio{grid-template-columns:1fr}}
+.cell{background:linear-gradient(180deg,var(--ink2),var(--ink));padding:clamp(26px,3vw,38px);
+  display:flex;flex-direction:column;gap:14px;transition:.4s ease}
+.cell:hover{background:linear-gradient(180deg,rgba(126,16,36,.5),var(--ink))}
+.cell .ix{font-family:var(--mono);font-size:10px;letter-spacing:.28em;color:var(--ember)}
+.cell h3{margin:0;font-family:var(--serif);font-weight:400;font-size:1.4rem;letter-spacing:-.01em}
+.cell p{margin:0;color:#f0c6cd;font-size:.95rem}
+.cell ul{margin:0;padding-left:18px;color:#f0c6cd;font-size:.93rem}
+.cell li{margin-bottom:7px}
+.cell b{color:var(--glow);font-weight:400}
+
+/* constraint callout */
+.constraint{margin-top:2px;border:1px solid var(--line);border-top:none;
+  background:linear-gradient(90deg,rgba(126,16,36,.35),rgba(23,6,8,.9));padding:clamp(24px,3vw,34px);
+  display:grid;grid-template-columns:auto 1fr;gap:clamp(18px,3vw,34px);align-items:center}
+@media(max-width:720px){.constraint{grid-template-columns:1fr}}
+.constraint .big{font-family:var(--serif);font-size:clamp(2.4rem,7vw,4.6rem);line-height:.9;
+  background:linear-gradient(160deg,#fff5f7,var(--scarlet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.constraint p{margin:0;color:#f6dde2;font-size:.98rem}
+
+/* level architecture */
+.arch{display:grid;gap:2px;background:var(--line);border:1px solid var(--line);margin-top:6px}
+.arch .row{display:grid;grid-template-columns:120px 1fr;gap:26px;background:var(--ink2);padding:clamp(22px,3vw,30px);
+  transition:.35s ease}
+.arch .row:hover{background:rgba(126,16,36,.28)}
+@media(max-width:700px){.arch .row{grid-template-columns:1fr;gap:8px}}
+.arch .lv{font-family:var(--mono);font-size:22px;letter-spacing:.06em;color:var(--ember)}
+.arch h4{margin:0 0 8px;font-family:var(--serif);font-weight:400;font-size:1.3rem}
+.arch p{margin:0;color:#f0c6cd;font-size:.95rem}
+.arch .pot{color:var(--glow);font-family:var(--mono);font-size:.86rem}
+
+/* prepull */
+.pp{display:grid;gap:2px;background:var(--line);border:1px solid var(--line);grid-template-columns:repeat(4,1fr);margin-bottom:44px}
+@media(max-width:900px){.pp{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.pp{grid-template-columns:1fr}}
+.pp .s{background:var(--ink2);padding:22px;display:flex;flex-direction:column;gap:6px}
+.pp .s .t{font-family:var(--mono);font-size:clamp(1.1rem,2.4vw,1.6rem);color:var(--ember);letter-spacing:.04em}
+.pp .s .a{font-family:var(--serif);font-size:1.1rem}
+.pp .s .d{font-size:.85rem;color:var(--dim)}
+
+/* burst table */
+.tbl{width:100%;border-collapse:collapse;font-size:.92rem;border:1px solid var(--line)}
+.tbl th{background:rgba(126,16,36,.4);text-align:left;padding:13px 16px;font-family:var(--mono);
+  font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--glow);border-bottom:1px solid var(--line)}
+.tbl td{padding:13px 16px;border-bottom:1px solid rgba(255,147,166,.1);color:#f0c6cd;vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover{background:rgba(126,16,36,.22)}
+.tbl .tm{font-family:var(--mono);font-size:.82rem;color:var(--ember);white-space:nowrap}
+.tbl .ga{font-family:var(--serif);font-size:1.02rem;color:var(--paper)}
+.tbl .wv{font-family:var(--mono);font-size:.8rem;color:var(--glow)}
+.tbl tr.hot td{background:rgba(224,50,74,.14)}
+.tbl tr.hot .ga{color:#fff}
+
+/* cadence pulse */
+.pulse{margin-top:12px}
+.pulse-track{position:relative;height:76px;border:1px solid var(--line);background:linear-gradient(90deg,rgba(38,10,15,.6),rgba(23,6,8,.6));border-radius:2px;overflow:hidden}
+.beat{position:absolute;top:0;bottom:0;border-left:1px dashed rgba(255,147,166,.22)}
+.beat span{position:absolute;top:8px;left:8px;font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;color:var(--dim);white-space:nowrap}
+.beat.major{border-left:1px solid var(--ember)}
+.beat.major span{color:var(--glow)}
+.pulse-marks{position:absolute;left:0;right:0;bottom:10px;height:22px}
+.pm{position:absolute;bottom:0;width:1px;background:var(--glow);opacity:.7}
+.pulse-legend{display:flex;gap:26px;flex-wrap:wrap;margin-top:16px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+.beats{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--line);border:1px solid var(--line);margin-top:2px}
+@media(max-width:860px){.beats{grid-template-columns:1fr}}
+.beat-card{background:var(--ink2);padding:clamp(24px,3vw,32px)}
+.beat-card .bt{font-family:var(--mono);font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--ember);margin-bottom:10px}
+.beat-card h4{margin:0 0 10px;font-family:var(--serif);font-weight:400;font-size:1.25rem}
+.beat-card p{margin:0;color:#f0c6cd;font-size:.93rem}
+
+/* ladder */
+.ladder{display:grid;gap:2px;background:var(--line);border:1px solid var(--line);counter-reset:l}
+.ladder li{list-style:none;counter-increment:l;background:var(--ink2);padding:16px 20px 16px 74px;position:relative;transition:.3s ease}
+.ladder li:hover{background:rgba(126,16,36,.3)}
+.ladder li::before{content:counter(l);position:absolute;left:20px;top:50%;transform:translateY(-50%);
+  font-family:var(--serif);font-size:1.5rem;color:var(--ember);opacity:.85}
+.ladder .a{font-family:var(--serif);font-size:1.05rem;color:var(--paper)}
+.ladder .c{font-size:.88rem;color:var(--dim);margin-top:3px}
+.ladder li.crit{background:linear-gradient(90deg,rgba(224,50,74,.22),var(--ink2) 70%)}
+.ladder li.crit::before{color:var(--glow)}
+.ladder{padding:0;margin:0}
+
+h3.mini{font-family:var(--mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--dim);
+  margin:0 0 16px;display:flex;align-items:center;gap:12px}
+h3.mini::before{content:"";width:26px;height:1px;background:var(--crimson)}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,64px)}
+@media(max-width:880px){.cols2{grid-template-columns:1fr}}
+
+/* tiers */
+.tiers{display:grid;gap:2px;background:var(--line);border:1px solid var(--line)}
+.tier{display:grid;grid-template-columns:150px 1fr;gap:22px;background:var(--ink2);padding:20px 24px;transition:.35s}
+.tier:hover{background:rgba(126,16,36,.3)}
+@media(max-width:700px){.tier{grid-template-columns:1fr;gap:8px}}
+.tier .th{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ember)}
+.tier.t1 .th{color:var(--glow)}
+.tier .jobs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.chip{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;padding:5px 11px;border:1px solid var(--line);border-radius:999px;color:#ffd7de}
+.tier.t1 .chip{border-color:rgba(255,147,166,.55);color:#fff;background:rgba(224,50,74,.2)}
+.tier .rz{font-size:.9rem;color:var(--dim)}
+
+/* notes */
+.notes{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;background:var(--line);border:1px solid var(--line)}
+@media(max-width:820px){.notes{grid-template-columns:1fr}}
+.note{background:var(--ink2);padding:clamp(24px,3vw,34px);display:flex;gap:18px;align-items:flex-start;transition:.35s}
+.note:hover{background:rgba(126,16,36,.3)}
+.note .n{font-family:var(--mono);font-size:12px;color:var(--ember);padding-top:2px}
+.note h4{margin:0 0 6px;font-family:var(--serif);font-weight:400;font-size:1.15rem}
+.note p{margin:0;color:#f0c6cd;font-size:.93rem}
+
+/* stat ladder */
+.stats{display:grid;gap:2px;background:var(--line);border:1px solid var(--line)}
+.stats .sr{display:grid;grid-template-columns:44px 210px 1fr;gap:20px;background:var(--ink2);padding:18px 22px;align-items:baseline;transition:.3s}
+.stats .sr:hover{background:rgba(126,16,36,.3)}
+@media(max-width:760px){.stats .sr{grid-template-columns:40px 1fr;gap:10px}.stats .sr .d{grid-column:1/-1}}
+.stats .rk{font-family:var(--mono);font-size:12px;color:var(--ember)}
+.stats .nm{font-family:var(--serif);font-size:1.1rem}
+.stats .d{font-size:.9rem;color:var(--dim)}
+.stats .sr.avoid .nm{color:#ffb0a0}
+.stats .sr.top .nm{color:var(--glow)}
+
+/* pull quote */
+.pull{max-width:70ch;font-family:var(--serif);font-size:clamp(1.3rem,3.2vw,2.2rem);line-height:1.35;
+  color:var(--paper);padding-left:28px;border-left:2px solid var(--crimson);margin:0}
+.pull em{color:var(--glow);font-style:italic}
+
+footer{position:relative;z-index:3;border-top:1px solid var(--line);margin-top:40px;
+  padding:clamp(50px,8vh,90px) 0 44px;background:linear-gradient(180deg,transparent,rgba(38,10,15,.55))}
+.fgrid{display:grid;grid-template-columns:1fr auto;gap:34px;align-items:end}
+@media(max-width:760px){.fgrid{grid-template-columns:1fr}}
+.fmark{font-family:var(--serif);font-size:clamp(2.4rem,9vw,5.6rem);line-height:.9;letter-spacing:-.03em;
+  background:linear-gradient(160deg,#ffe4e9,var(--crimson));-webkit-background-clip:text;background-clip:text;color:transparent}
+.fmeta{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);
+  display:flex;flex-direction:column;gap:10px;align-items:flex-end;text-align:right}
+@media(max-width:760px){.fmeta{align-items:flex-start;text-align:left}}
+.fmeta a{color:var(--glow);border-bottom:1px solid var(--line);padding-bottom:2px;transition:.3s}
+.fmeta a:hover{border-color:var(--glow)}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
+  .rv{opacity:1;transform:none}
+  html{scroll-behavior:auto}
+}
+/* ---- legibility pass ---- */
+.brand{font-size:12px;color:#d7a8b1}
+.navlinks a{font-size:11.5px}
+.rail a{font-size:11px;opacity:.75;color:#e6bcc4;text-shadow:0 1px 7px rgba(0,0,0,.9)}
+.rail a:hover,.rail a.act{opacity:1}
+.eyebrow{font-size:12px}
+.scrollcue{font-size:11px;color:#e6bcc4}
+.hs .k{font-size:10.5px;color:#c79aa3}
+.hd .num{font-size:12px}
+.hd .kicker{font-size:11.5px}
+.marquee span{font-size:12px}
+.caption,.pulse-legend{font-size:11px;color:#c79aa3}
+.beat span{font-size:10.5px}
+.tbl th{font-size:10.5px}
+.ladder .c{font-size:.9rem}
+.tier .rz{font-size:.92rem}
+.stats .d{font-size:.92rem}
+</style>
+</head>
+<body>
+
+<svg id="grain" aria-hidden="true"><filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#g)"/></svg>
+<div class="progress" id="prog"></div>
+<canvas id="embers" aria-hidden="true"></canvas>
+
+<header class="topbar" id="bar">
+  <a class="brand" href="index.html"><span class="sig">✦</span><b>EMBER&nbsp;WALTZ</b><span>DNC</span></a>
+  <nav class="navlinks">
+    <a href="index.html">Both Paths</a>
+    <a class="brd" href="bard-guide.html">The Resonance Archive</a>
+  </nav>
+</header>
+
+<nav class="rail" id="rail" aria-label="Section index">
+  <a href="#mechanics"><span>Mechanics</span><span class="bar"></span></a>
+  <a href="#arch"><span>Architecture</span><span class="bar"></span></a>
+  <a href="#opener"><span>The Opener</span><span class="bar"></span></a>
+  <a href="#variations"><span>Variations</span><span class="bar"></span></a>
+  <a href="#cadence"><span>Cadence</span><span class="bar"></span></a>
+  <a href="#filler"><span>Priority</span><span class="bar"></span></a>
+  <a href="#partner"><span>Partner</span><span class="bar"></span></a>
+  <a href="#gear"><span>Gearing</span><span class="bar"></span></a>
+</nav>
+
+<main>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-layer hero-glow"></div>
+  <div class="hero-layer hero-lines"></div>
+  <div class="hero-layer hero-ribbons" aria-hidden="true">
+    <svg viewBox="0 0 600 600">
+      <path class="rib dash" d="M-40 380 C 130 200, 250 520, 400 300 S 620 120, 680 260" stroke="rgba(255,107,82,.55)"/>
+      <path class="rib dash b" d="M-40 300 C 120 460, 260 140, 420 330 S 600 480, 700 340" stroke="rgba(224,50,74,.5)"/>
+      <path class="rib" d="M-40 450 C 150 330, 240 560, 420 400 S 620 320, 700 420" stroke="rgba(255,147,166,.18)"/>
+      <path class="rib" d="M-40 200 C 140 300, 260 60, 430 200 S 640 260, 700 160" stroke="rgba(255,147,166,.14)"/>
+      <path class="rib dash" d="M-40 520 C 160 470, 280 620, 450 500 S 640 470, 700 540" stroke="rgba(126,16,36,.7)"/>
+    </svg>
+  </div>
+  <div class="spot" id="spot" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div class="eyebrow"><span class="bar"></span>Physical Ranged DPS · Dawntrail 7.x</div>
+    <h1 class="mega">Dancer</h1>
+    <div class="mega-sub">
+      <span class="lt">Ember Waltz</span>
+      <span class="rule"></span>
+      <span class="tag">The lowest personal damage on the board, and the strongest force multiplier in it. Every step is a loan you call in during a twenty-second window.</span>
+    </div>
+    <div class="hero-stats">
+      <div class="hs"><span class="k">Burst Window</span><span class="v">20s · 2-min</span></div>
+      <div class="hs"><span class="k">Step GCD Lock</span><span class="v">1.5s · 1 weave</span></div>
+      <div class="hs"><span class="k">GCD Target</span><span class="v">2.50s</span></div>
+      <div class="hs"><span class="k">Pre-pull</span><span class="v">−15.5s</span></div>
+    </div>
+  </div>
+  <div class="scrollcue">Scroll<i></i></div>
+</section>
+
+<div class="band" aria-hidden="true">
+  <div class="marquee" id="mq">
+    <span>Technical Finish</span><span>Devilment</span><span>Tillana</span><span>Dance of the Dawn</span><span>Finishing Move</span><span>Last Dance</span><span>Starfall Dance</span><span>Saber Dance</span><span>Flourish</span><span>Fan Dance III</span><span>Standard Finish</span><span>Closed Position</span><span>Shield Samba</span><span>Curing Waltz</span>
+  </div>
+</div>
+
+<!-- 01 MECHANICS -->
+<section class="blk" id="mechanics">
+  <div class="wrap">
+    <div class="hd rv">
+      <div class="num">01</div>
+      <div>
+        <h2>Core Mechanics</h2>
+        <div class="kicker">Support, probability, and one hard constraint</div>
+        <p class="lede">The Dancer is a proc engine bolted to a raid buff. Its damage is low by design — its job is to multiply everyone else's, and to be moving while it does it.</p>
+      </div>
+    </div>
+
+    <div class="trio rv">
+      <article class="cell">
+        <span class="ix">DANCE STEPS</span>
+        <h3>Two dances, two clocks</h3>
+        <p><b>Standard Step</b> runs on a 30-second cooldown; <b>Technical Step</b> on 120. Standard Finish grants 5% to you and your Dance Partner — Technical Finish grants 5% to the entire party for 20 seconds.</p>
+        <p>Initiating any step locks the GCD to 1.5 seconds, and the step actions themselves run on the same truncated timer.</p>
+      </article>
+      <article class="cell">
+        <span class="ix">RESOURCES</span>
+        <h3>Esprit &amp; feathers</h3>
+        <p><b>Esprit</b> fills from your weaponskills, your partner's under Standard Finish, and the <em>whole raid's</em> under Technical Finish. It caps at 100 and spends on Saber Dance at 50 — and the first Saber Dance after Technical Finish upgrades to <b>Dance of the Dawn</b>.</p>
+        <p><b>Fourfold Feathers</b> generate on a 50% roll from combo procs and cap at four. They feed Fan Dance, which itself rolls for Fan Dance III.</p>
+      </article>
+      <article class="cell">
+        <span class="ix">PROCS</span>
+        <h3>Overwriting is the sin</h3>
+        <p>A proc has a 30-second life. Let one expire and you have deleted damage you already owned — the single most common unforced error on the job.</p>
+        <p><b>Flourish</b> grants every combo proc at once, so you must enter it with a clean board or a forced proc destroys a natural one.</p>
+      </article>
+    </div>
+
+    <div class="constraint rv">
+      <div class="big">1.5s</div>
+      <p><b>The weave constraint.</b> A normal 2.50-second GCD lets you weave two oGCDs. A dance step — and every step input inside it — allows exactly <b>one</b>, because the recast is 1.5 seconds. Clipping a GCD during the step sequence is how a Dancer quietly loses an entire GCD from the burst window. Everything about how this job is played descends from this one number.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 02 ARCHITECTURE -->
+<section class="blk" id="arch">
+  <div class="wrap">
+    <div class="hd rv">
+      <div class="num">02</div>
+      <div>
+        <h2>Level 90 → 100</h2>
+        <div class="kicker">Three actions rewrote the burst</div>
+        <p class="lede">Dawntrail did not repaint the Dancer. It added three capstones that made the burst window both heavier and stricter — and normalised one timer that had quietly dictated gearing for years.</p>
+      </div>
+    </div>
+
+    <div class="arch rv">
+      <div class="row"><div class="lv">92</div><div><h4>Last Dance</h4><p>Standard Finish and Finishing Move both grant <em>Last Dance Ready</em> for 30 seconds. <span class="pot">540 potency · 60% AoE falloff</span></p><p style="margin-top:8px;color:var(--dim);font-size:.9rem">This raised the cost of drifting Standard Step: a missed cycle now loses the finish <em>and</em> a 540-potency payload.</p></div></div>
+      <div class="row"><div class="lv">96</div><div><h4>Finishing Move</h4><p>Flourish grants <em>Finishing Move Ready</em>. While active, Standard Step becomes Finishing Move — a free Standard Finish. <span class="pot">850 potency · 60% AoE falloff</span></p><p style="margin-top:8px;color:var(--dim);font-size:.9rem">The arithmetic that matters: a manual Standard Step sequence eats <b>5.0 seconds</b> (1.5 initiate + 2×1.0 step + 1.5 finish). Finishing Move occupies a <b>single 2.5-second GCD</b>. Inside a 20-second window, that condensation is the whole point.</p></div></div>
+      <div class="row"><div class="lv">100</div><div><h4>Dance of the Dawn</h4><p>Technical Finish grants <em>Dance of the Dawn Ready</em> for 30 seconds, turning a Saber Dance into a line AoE for the same 50 Esprit. <span class="pot">1,000 potency</span></p><p style="margin-top:8px;color:var(--dim);font-size:.9rem">It is the single largest button in the kit and it must never be spent outside a buff window.</p></div></div>
+      <div class="row"><div class="lv">↺</div><div><h4>Tillana normalised</h4><p>In Endwalker, Tillana sat on a fixed 1.5-second GCD and forced awkward Skill Speed maths to keep the GCD wheel aligned with the two-minute cycle. Dawntrail returned it to a standard <b>2.50s</b> recast.</p><p style="margin-top:8px;color:var(--dim);font-size:.9rem">The consequence is exact: at a strict 2.50s GCD a Dancer executes precisely <b>48 GCDs per 120-second loop</b>, so Technical Step and Flourish drift back off cooldown exactly as the wheel rolls. There is no longer any reason to carry Skill Speed.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 OPENER -->
+<section class="blk" id="opener">
+  <div class="wrap">
+    <div class="hd rv">
+      <div class="num">03</div>
+      <div>
+        <h2>The Level 100 Opener</h2>
+        <div class="kicker">Fifteen seconds before the pull to twenty after</div>
+        <p class="lede">The whole sequence exists to fold Tillana, Dance of the Dawn, Last Dance, Finishing Move and Starfall Dance into one overlapping Technical Finish and Devilment window — while the rest of the raid stacks its own buffs on top.</p>
+      </div>
+    </div>
+
+    <h3 class="mini rv">Pre-pull</h3>
+    <div class="pp rv">
+      <div class="s"><span class="t">−15.5s</span><span class="a">Standard Step</span><span class="d">Initiate the dance; do not finish it.</span></div>
+      <div class="s"><span class="t">−15.0 → −2.0s</span><span class="a">Two step inputs</span><span class="d">Channel the random colours while the countdown runs.</span></div>
+      <div class="s"><span class="t">−1.5s</span><span class="a">Grade 3 Gemdraught</span><span class="d">Dexterity potion inside the countdown.</span></div>
+      <div class="s"><span class="t">−0.5s</span><span class="a">Standard Finish</span><span class="d">Fractionally early — this is deliberate.</span></div>
+    </div>
+
+    <div class="rv" style="margin-bottom:44px">
+      <p style="color:#f0c6cd;margin:0 0 10px"><b style="color:var(--glow)">Why −0.5 and not 0.0.</b> Standard auto-attacks carry an innate delay of roughly half a second on engage. Triggering Standard Finish just before the boss becomes targetable forces the auto-attack cycle to start instantly instead of losing a swing to the delay. It is a fraction of a second of damage, and it is free.</p>
+      <p style="color:#f0c6cd;margin:0"><b style="color:var(--glow)">Closed Position first.</b> Assign the Dance Partner before the pull — priority is covered in section 07.</p>
+    </div>
+
+    <h3 class="mini rv">The burst · 0.0s → ~20s</h3>
+    <table class="tbl rv">
+      <thead><tr><th>Timer</th><th>GCD action</th><th>Weave</th><th>Why it sits here</th></tr></thead>
+      <tbody>
+        <tr><td class="tm">0.0s</td><td class="ga">Standard Finish</td><td class="wv">—</td><td>Applies the 5% buff and grants Last Dance Ready.</td></tr>
+        <tr><td class="tm">0.0s</td><td class="ga">Technical Step</td><td class="wv">4 step inputs</td><td>Opens the burst; channels roughly five seconds.</td></tr>
+        <tr class="hot"><td class="tm">5.0s</td><td class="ga">Technical Finish</td><td class="wv">Devilment</td><td>Party 5% plus 20% Crit/DH to you and your partner. Weaving Devilment here mirrors its 20s duration onto Technical's exactly.</td></tr>
+        <tr class="hot"><td class="tm">7.5s</td><td class="ga">Tillana</td><td class="wv">Flourish</td><td>Generates exactly 50 Esprit and grants every proc plus Finishing Move Ready.</td></tr>
+        <tr><td class="tm">10.0s</td><td class="ga">Dance of the Dawn</td><td class="wv">Fan Dance IV</td><td>Spends the Esprit Tillana just guaranteed, for 1,000 potency. FD4 adds 460 more.</td></tr>
+        <tr><td class="tm">12.5s</td><td class="ga">Last Dance</td><td class="wv">Fan Dance III</td><td>Consumes the proc from the pre-pull step — and must resolve before Finishing Move overwrites it.</td></tr>
+        <tr><td class="tm">15.0s</td><td class="ga">Starfall Dance</td><td class="wv">feather dumps</td><td>Auto direct-crit GCD granted by Devilment.</td></tr>
+        <tr><td class="tm">17.5s</td><td class="ga">Finishing Move</td><td class="wv">feather dumps</td><td>850 potency, refreshes the Standard Finish buff, grants a fresh Last Dance.</td></tr>
+        <tr><td class="tm">~20s</td><td class="ga">Saber Dance</td><td class="wv">feather dumps</td><td>Spend pooled Esprit before the raid-wide generation overcaps the gauge.</td></tr>
+        <tr><td class="tm">—</td><td class="ga">Priority GCDs</td><td class="wv">feather dumps</td><td>RNG-dependent: Saber Dance above 85 Esprit, then Fountainfall, then Reverse Cascade.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="notes rv" style="margin-top:46px">
+      <div class="note"><span class="n">01</span><div><h4>Tillana is not negotiable</h4><p>It guarantees exactly 50 Esprit, which is the cost of the Dance of the Dawn on the very next GCD. Delay it and a burst of party weaponskills in the first three seconds can cap the gauge and waste that 50 — because during Technical Finish the entire raid is generating Esprit for you.</p></div></div>
+      <div class="note"><span class="n">02</span><div><h4>Flourish comes after Tillana</h4><p>Not after Technical Finish. Fired earlier, its granted procs and Finishing Move Ready risk timing out or capping your feathers. At 7.5 seconds every proc stays live comfortably into the cooldown phase, so you spend them methodically instead of panic-weaving.</p></div></div>
+      <div class="note"><span class="n">03</span><div><h4>Finishing Move catches the raid</h4><p>At ~15s it lands 850 potency inside the peak of the window — your Devilment <em>and</em> everyone else's, Ninja's Mug, Astrologian's Divination, Dragoon's Battle Litany — while refreshing Standard Finish before it can drop.</p></div></div>
+      <div class="note"><span class="n">04</span><div><h4>Order matters once</h4><p>Last Dance must resolve before Finishing Move, because Finishing Move grants its own Last Dance Ready. Reverse the two and you have thrown away 540 potency.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 VARIATIONS -->
+<section class="blk" id="variations">
+  <div class="wrap">
+    <div class="hd rv">
+      <div class="num">04</div>
+      <div>
+        <h2>When the Pull Goes Wrong</h2>
+        <div class="kicker">Short countdowns, dead bosses, and the opener you must not use</div>
+        <p class="lede">The fifteen-second sequence assumes an orchestrated raid. Most of the game is not that, and the Dancer has to have an answer for both.</p>
+      </div>
+    </div>
+
+    <div class="notes rv">
+      <div class="note"><span class="n">01</span><div><h4>The five-second pull</h4><p>Party Finder tanks pull short. Attempting the full pre-pull means Standard Finish lands seconds <em>after</em> the boss is engaged, which drags Technical Finish with it and knocks your whole burst out of phase with the raid. The answer is ugly but correct: open with Standard Step as your first combat action and accept Technical Step arriving about five seconds late. The delay cascades; it is still better than the alternative.</p></div></div>
+      <div class="note"><span class="n">02</span><div><h4>Do not open Technical-first</h4><p>The tempting fix — skip Standard Finish and dump Technical Finish on GCD 1 — is rejected everywhere outside sub-minute kill times. It costs you the opening Last Dance proc, and it means Technical Finish itself misses the 5% Standard Finish multiplier. Two losses to buy a timing fix.</p></div></div>
+      <div class="note"><span class="n">03</span><div><h4>Ultimate: the delayed burst</h4><p>In encounters like Futures Rewritten, The Omega Protocol or Dragonsong's Reprise, bosses go untargetable or invulnerable exactly on the even minutes. Looping rigidly puts your buffs on a wall. The raid agrees to hold: you drift Technical Step, Devilment and Flourish to the re-engagement, and in the meantime you park resources at exactly <b>4 feathers</b> and roughly <b>80–90 Esprit</b>, ready to unload the moment the call comes.</p></div></div>
+      <div class="note"><span class="n">04</span><div><h4>Latency and the double weave</h4><p>Fan Dance has a 1.0-second recast, so two can fit one GCD — but only one order is safe. FD1→FD1 is error-prone; FD1→FD3 needs the server round-trip under ~60ms. The universal answer is <b>FD3→FD1</b>: fire a proc you already hold, then a fresh Fan Dance. No confirmation is needed mid-weave, so the inputs buffer and ping stops mattering.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 CADENCE -->
+<section class="blk" id="cadence">
+  <div class="wrap">
+    <div class="hd rv">
+      <div class="num">05</div>
+      <div>
+        <h2>The 30 / 60 / 120 Cadence</h2>
+        <div class="kicker">The heartbeat under the chaos</div>
+        <p class="lede">Between bursts the Dancer is reactive — but it is never free-form. Three rigid clocks run underneath every proc decision, and everything else is scheduled around them.</p>
+      </div>
+    </div>
+
+    <div class="pulse rv">
+      <div class="pulse-track" id="pulse">
+        <div class="beat major" style="left:0%"><span>0:00 · Standard Step / burst opens</span></div>
+        <div class="beat" style="left:25%"><span>0:30 · Standard Step</span></div>
+        <div class="beat major" style="left:50%"><span>1:00 · Flourish + Finishing Move</span></div>
+        <div class="beat" style="left:75%"><span>1:30 · Standard Step</span></div>
+        <div class="beat major" style="left:99.7%"><span style="left:auto;right:8px">2:00 · Technical window</span></div>
+        <div class="pulse-marks" id="marks"></div>
+      </div>
+      <div class="pulse-legend"><span>◆ major burst</span><span>│ Standard Step refresh</span><span>every 30s · 60s · 120s</span></div>
+    </div>
+
+    <div class="beats rv">
+      <div class="beat-card"><div class="bt">Every 30 seconds</div><h4>Standard Step or Finishing Move</h4><p>Refresh the buff and take the Last Dance proc. From Level 96 you alternate: at the even minutes Flourish hands you Finishing Move, which does the same job in a single GCD instead of five seconds.</p></div>
+      <div class="beat-card"><div class="bt">Every 60 seconds</div><h4>The Flourish mini-burst</h4><p>Flourish grants every combo proc, a free Fan Dance III, Fan Dance IV and Finishing Move. Clear your board before pressing it — an overwritten natural proc is a direct loss.</p></div>
+      <div class="beat-card"><div class="bt">Every 120 seconds</div><h4>The Technical window</h4><p>Technical Step and Devilment together. For the 20.5 seconds after Technical Finish, every player in the raid can feed your Esprit. Enter with 80–100 Esprit, 3–4 feathers, and an empty board.</p></div>
+    </div>
+
+    <div class="rv" style="margin-top:56px">
+      <p class="pull">If a mechanic makes you late on Standard Step, hold it. <em>Technical Step is the clock that matters</em> — never let a drifted dance push the raid buff off the two-minute mark.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 06 FILLER -->
+<section class="blk" id="filler">
+  <div class="wrap">
+    <div class="hd rv">
+      <div class="num">06</div>
+      <div>
+        <h2>The Filler Priority Matrix</h2>
+        <div class="kicker">Nine ranks, evaluated on every GCD</div>
+        <p class="lede">With no combo to follow, the Dancer reads the state of its timers and gauges each GCD and takes the highest rung available. The ranking is not arbitrary — it is sorted by how expensive it is to be wrong.</p>
+      </div>
+    </div>
+
+    <ol class="ladder rv">
+      <li class="crit"><span class="a">Expiring procs</span><span class="c">Last Dance, Fountainfall or Reverse Cascade if the timer is about to reach zero. Losing a proc is the highest unforced error available to you.</span></li>
+      <li><span class="a">Saber Dance — Esprit ≥ 85</span><span class="c">Generation runs 5 per GCD and 10 per partner proc, so sitting at 85+ risks losing resources on the very next press.</span></li>
+      <li><span class="a">Standard Step / Finishing Move</span><span class="c">Strictly on cooldown. Drift misaligns every future Last Dance window and eventually costs a whole usage across the fight.</span></li>
+      <li><span class="a">Fountainfall</span><span class="c">Consumes Silken Flow and is preferred over Reverse Cascade so the underlying combo continues without breaking.</span></li>
+      <li><span class="a">Combo'd Fountain</span><span class="c">If Cascade was used, the 30-second window to land Fountain must be prioritised before it lapses.</span></li>
+      <li><span class="a">Saber Dance</span><span class="c">Dump excess Esprit safely rather than banking toward another cap.</span></li>
+      <li><span class="a">Last Dance</span><span class="c">Consume it before the next Standard Step or Finishing Move overwrites the proc.</span></li>
+      <li><span class="a">Reverse Cascade</span><span class="c">Consumes Silken Symmetry.</span></li>
+      <li><span class="a">Cascade</span><span class="c">The default filler, only when nothing else is available.</span></li>
+    </ol>
+
+    <div class="cols2 rv" style="margin-top:56px">
+      <div>
+        <h3 class="mini">Base combo &amp; procs</h3>
+        <p style="color:#f0c6cd"><b>Cascade</b> rolls 50% for Reverse Cascade; <b>Fountain</b> rolls 50% for Fountainfall. Each proc carries its own 50% roll for a feather. So the loop is two layers of coin flips, and the priority list above is how you handle two heads in a row.</p>
+      </div>
+      <div>
+        <h3 class="mini">The feather rule</h3>
+        <p style="color:#f0c6cd">Feathers cap at four and never regenerate on their own. Never hold four unless you are within ten seconds of Technical Step. At four feathers at the one-minute mark, spend one immediately — so the next proc you roll is not silently discarded.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 PARTNER -->
+<section class="blk" id="partner">
+  <div class="wrap">
+    <div class="hd rv">
+      <div class="num">07</div>
+      <div>
+        <h2>Closed Position</h2>
+        <div class="kicker">Choosing the Dance Partner</div>
+        <p class="lede">The partner receives your permanent 5%, your Curing Waltz healing, and the whole of your Devilment — a 20% Crit and Direct Hit steroid. Picking wrong is the largest single lever on a Dancer's raid contribution.</p>
+      </div>
+    </div>
+
+    <div class="notes rv" style="grid-template-columns:repeat(2,1fr);margin-bottom:2px">
+      <div class="note"><span class="n">01</span><div><h4>Esprit is normalised now</h4><p>Fast jobs used to win the partner slot by feeding Esprit faster. Dawntrail weights the internal coefficients by each job's natural GCD speed, so a slow Black Mage and a fast Monk generate roughly the same Esprit over a sustained fight — about a 20% proc rate. Burst timing no longer changes with composition.</p></div></div>
+      <div class="note"><span class="n">02</span><div><h4>So what decides it</h4><p>How well the partner converts the twenty-second Devilment window into damage. Concentrated burst scales hardest; flat sustained damage scales least. That is the entire ranking.</p></div></div>
+    </div>
+
+    <div class="tiers rv" style="margin-top:2px">
+      <div class="tier t1"><div class="th">Tier 1 · Optimal</div><div><div class="jobs"><span class="chip">PCT</span><span class="chip">SAM</span></div><div class="rz">Pictomancer's guaranteed criticals — the Hammer combo — scale obscenely against Devilment, and Samurai remains the king of selfish sustained melee damage.</div></div></div>
+      <div class="tier"><div class="th">Tier 2 · Strong</div><div><div class="jobs"><span class="chip">RPR</span><span class="chip">VPR</span><span class="chip">MNK</span><span class="chip">NIN</span></div><div class="rz">The standard melee block. They align flawlessly with the two-minute window and only slightly trail Tier 1 in raw Devilment scaling.</div></div></div>
+      <div class="tier"><div class="th">Tier 3 · Moderate</div><div><div class="jobs"><span class="chip">DRG</span><span class="chip">BLM</span></div><div class="rz">Black Mage is consistent but lacks a hyper-concentrated two-minute spike; Dragoon leans on its own raid buffs.</div></div></div>
+      <div class="tier"><div class="th">Tier 4 · Sub-optimal</div><div><div class="jobs"><span class="chip">RDM</span><span class="chip">SMN</span></div><div class="rz">Lower personal damage ceilings mean less baseline potency for the Dancer to multiply.</div></div></div>
+      <div class="tier"><div class="th">Tier 5 · Last resort</div><div><div class="jobs"><span class="chip">MCH</span><span class="chip">BRD</span><span class="chip">DNC</span></div><div class="rz">Physical ranged have the lowest personal damage in the game, which makes them the worst possible percentage-amplification targets.</div></div></div>
+    </div>
+
+    <div class="notes rv" style="margin-top:46px">
+      <div class="note"><span class="n">03</span><div><h4>Two Dancers</h4><p>They may partner each other — the self and partner buffs stack cleanly. They cannot partner the same third member: identical buff instances overwrite, so the second Dancer's contribution vanishes.</p></div></div>
+      <div class="note"><span class="n">04</span><div><h4>The list is not the answer</h4><p>A well-geared, skilled Black Mage beats a poorly geared Samurai who dies twice. Your rDPS is tied to the partner's <em>actual</em> damage during the window — partnering a corpse multiplies nothing. If your partner takes Weakness, macro-swap Closed Position to the next-best DPS immediately.</p></div></div>
+      <div class="note"><span class="n">05</span><div><h4>Advanced: partner swapping</h4><p>At the top of the parse ladder Dancers swap mid-fight — hold a Samurai for the sustained 5%, then macro-swap to a Pictomancer about two seconds before Devilment to catch the overtuned burst, then swap back.</p></div></div>
+      <div class="note"><span class="n">06</span><div><h4>Verifying it</h4><p>PartnerCalc, fed by ACT logs, models exactly how much rDPS an alternate partner would have yielded in a fight you already ran. It is the only honest way to answer "who should have had it".</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 GEAR + AOE + DEF -->
+<section class="blk" id="gear">
+  <div class="wrap">
+    <div class="hd rv">
+      <div class="num">08</div>
+      <div>
+        <h2>Gearing, Wide Pulls &amp; Utility</h2>
+        <div class="kicker">The solved half of the job</div>
+      </div>
+    </div>
+
+    <h3 class="mini rv">Stat priority</h3>
+    <div class="stats rv">
+      <div class="sr top"><span class="rk">01</span><span class="nm">Weapon Damage / Dexterity</span><span class="d">Primary scaling. An item-level upgrade that raises these almost always beats any substat arrangement.</span></div>
+      <div class="sr top"><span class="rk">02</span><span class="nm">Critical Hit</span><span class="d">The apex substat. It scales quadratically — raising both how often you crit and how hard — which is exactly what the Devilment window wants. Maximise it on every piece and every materia slot.</span></div>
+      <div class="sr"><span class="rk">03</span><span class="nm">Determination</span><span class="d">A linear multiplier on all damage and healing, including your Curing Waltz.</span></div>
+      <div class="sr"><span class="rk">04</span><span class="nm">Direct Hit</span><span class="d">Meld only once Critical Hit is capped on the piece and Determination thresholds are met.</span></div>
+      <div class="sr avoid"><span class="rk">05</span><span class="nm">Skill Speed — avoid</span><span class="d">It speeds the GCD without speeding dance recasts or procs, misaligning the 120-second cycle and clipping cooldowns. Since Tillana was normalised there is no longer any breakpoint to chase.</span></div>
+    </div>
+
+    <div class="notes rv" style="margin-top:46px">
+      <div class="note"><span class="n">01</span><div><h4>Savage vs Ultimate gearing</h4><p>Savage progression wants raw item level with natural Crit/Det. Ultimate encounters impose syncs — Futures Rewritten syncs to <b>i735</b> — and substat caps compress on the way down. A high-ilvl piece bloated with Skill Speed scales down <em>worse</em> than a lower-ilvl piece with perfect Crit/Det. Ultimate raiders use Ultimate weapons or calculated legacy accessories to max Crit/Det without wasting a point.</p></div></div>
+      <div class="note"><span class="n">02</span><div><h4>Wide pulls</h4><p>At three or more targets, Cascade/Fountain become <b>Windmill/Bladeshower</b> and the procs become <b>Rising Windmill/Bloodshower</b>. Feathers spend on <b>Fan Dance II</b> — which still rolls for Fan Dance III, and FD3 cleaves, so it stays a priority. Everything else is unchanged, because every one of the Dancer's big buttons is already an AoE.</p></div></div>
+      <div class="note"><span class="n">03</span><div><h4>Dungeon pull technique</h4><p>Start charging Standard Step while the tank is still running between packs. The steps deal no damage and generate no aggro, so you can prepare mid-run; the instant the tank stops, Standard Finish lands, and Technical Step rolls straight after.</p></div></div>
+      <div class="note"><span class="n">04</span><div><h4>Shield Samba</h4><p>15% party damage reduction in 30 yalms for 15 seconds. It shares an overwriting category with Bard's Troubadour and Machinist's Tactician — they do not stack, so it must be scheduled on the mitigation sheet, not pressed on instinct.</p></div></div>
+      <div class="note"><span class="n">05</span><div><h4>Curing Waltz geometry</h4><p>It emits 300 potency of healing from you and a mirrored 300 from your partner. If the two of you stack precisely, the radii overlap and the raid inside the overlap takes a 600-potency burst heal — on a 60-second cooldown.</p></div></div>
+      <div class="note"><span class="n">06</span><div><h4>Improvisation, flashed</h4><p>It channels regen and builds Rising Rhythm for a 5–10% max-HP party shield. In full uptime, flash it: activate and finish via an oGCD double-weave for the base regen and a 5% shield at no DPS cost. Hold the full channel for untargetable phases only.</p></div></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap fgrid">
+    <div class="fmark">Dancer</div>
+    <div class="fmeta">
+      <span>Physical Ranged · Dawntrail 7.x · Level 100</span>
+      <a href="index.html">← Both Paths</a>
+      <a href="bard-guide.html">The Resonance Archive — Bard →</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* progress + bar + rail */
+  var prog = document.getElementById("prog"), bar = document.getElementById("bar");
+  var railLinks = Array.prototype.slice.call(document.querySelectorAll("#rail a"));
+  var sections = railLinks.map(function(a){ return document.querySelector(a.getAttribute("href")); });
+  function onScroll(){
+    var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+    var p = max > 0 ? (h.scrollTop||document.body.scrollTop)/max : 0;
+    prog.style.width = (p*100).toFixed(2)+"%";
+    bar.classList.toggle("on", (h.scrollTop||0) > 40);
+    var mid = (h.scrollTop||0) + h.clientHeight*0.35, best=-1;
+    for (var i=0;i<sections.length;i++){ if (sections[i] && sections[i].offsetTop <= mid) best = i; }
+    railLinks.forEach(function(a,i){ a.classList.toggle("act", i===best); });
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  onScroll();
+
+  /* reveals */
+  var rvs = document.querySelectorAll(".rv");
+  if ("IntersectionObserver" in window && !reduce){
+    var io = new IntersectionObserver(function(en){
+      en.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, {threshold:0.12, rootMargin:"0px 0px -8% 0px"});
+    rvs.forEach(function(el,i){ el.style.transitionDelay = ((i%4)*70)+"ms"; io.observe(el); });
+  } else { rvs.forEach(function(el){ el.classList.add("in"); }); }
+
+  /* cadence pulse marks — 4 ticks per 30s segment */
+  var marks = document.getElementById("marks");
+  if (marks){
+    var total = 240; /* 0:00 -> 2:00 in seconds */
+    var frag = document.createDocumentFragment();
+    for (var s=0; s<=total; s+=5){
+      var d = document.createElement("div");
+      d.className = "pm";
+      d.style.left = ((s/total)*100).toFixed(3)+"%";
+      d.style.height = (s % 30 === 0) ? "22px" : "9px";
+      d.style.opacity = (s % 30 === 0) ? ".85" : ".28";
+      frag.appendChild(d);
+    }
+    marks.appendChild(frag);
+  }
+
+  /* hero spotlight */
+  var spot = document.getElementById("spot"), hero = document.querySelector(".hero");
+  if (spot && hero && !reduce && window.matchMedia("(pointer:fine)").matches){
+    hero.addEventListener("pointermove", function(ev){
+      var r = hero.getBoundingClientRect();
+      spot.style.left = (ev.clientX - r.left)+"px";
+      spot.style.top  = (ev.clientY - r.top)+"px";
+    });
+  }
+
+  /* marquee seamless loop */
+  var mq = document.getElementById("mq");
+  if (mq){ mq.innerHTML += mq.innerHTML; }
+
+  /* ambient embers */
+  var cv = document.getElementById("embers");
+  if (cv && !reduce){
+    var ctx = cv.getContext("2d"), P = [], dpr = Math.min(window.devicePixelRatio||1, 2);
+    function size(){
+      cv.width = window.innerWidth*dpr; cv.height = window.innerHeight*dpr;
+      cv.style.width = window.innerWidth+"px"; cv.style.height = window.innerHeight+"px";
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+    size();
+    window.addEventListener("resize", size);
+    var count = window.innerWidth < 760 ? 24 : 52;
+    for (var i=0;i<count;i++){
+      P.push({x:Math.random()*window.innerWidth, y:Math.random()*window.innerHeight,
+        r:Math.random()*1.8+0.4, s:Math.random()*0.45+0.12, a:Math.random()*0.42+0.1,
+        d:Math.random()*Math.PI*2, warm: Math.random()});
+    }
+    (function loop(){
+      ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
+      for (var i=0;i<P.length;i++){
+        var p = P[i];
+        var col = p.warm > .5 ? "255,107,82," : "255,147,166,";
+        ctx.beginPath();
+        ctx.fillStyle = "rgba("+col+p.a+")";
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        ctx.fill();
+        p.y -= p.s;
+        p.x += Math.sin(p.d)*0.26;
+        p.d += 0.006;
+        if (p.y < -8){ p.y = window.innerHeight+8; p.x = Math.random()*window.innerWidth; }
+      }
+      requestAnimationFrame(loop);
+    })();
+  }
+})();
+</script>
+</body>
+</html>
