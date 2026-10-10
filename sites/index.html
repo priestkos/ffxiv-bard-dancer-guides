@@ -167,7 +167,23 @@ section.blk{padding:clamp(80px,12vh,140px) 0;position:relative}
 .rv.in{opacity:1;transform:none}
 
 /* choose cards */
-.choose{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--line);border:1px solid var(--line)}
+.choose{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;background:var(--line);border:1px solid var(--line)}
+@media(max-width:1100px){.choose{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.choose{grid-template-columns:1fr}}
+/* scholar — dark blue */
+.card.s{background:linear-gradient(165deg,#020a22,#0b1c44)}
+.card.s .glow{background:radial-gradient(circle,rgba(59,130,246,.75),transparent 65%)}
+.card.s .idx{color:#60a5fa}
+.card.s h3{background:linear-gradient(150deg,#fff,#dbeafe 45%,#3b82f6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.card.s .sub{color:#93c5fd}
+.card.s p{color:#b6c6e3}
+.card.s li{color:#7f93b8}
+.card.s li::before{color:#3b82f6}
+.card.s .go{border-color:rgba(59,130,246,.5);color:#93c5fd}
+.card.s:hover .go{background:rgba(59,130,246,.16)}
+.navlinks a.s:hover{color:#93c5fd;border-color:rgba(59,130,246,.5)}
+.navlinks a.s{color:#c9cbc9}
+.fmeta a.s{color:#93c5fd}
 @media(max-width:900px){.choose{grid-template-columns:1fr}}
 .card{position:relative;padding:clamp(30px,4vw,48px);min-height:400px;display:flex;flex-direction:column;
   justify-content:space-between;overflow:hidden;transition:.45s ease}
@@ -294,6 +310,7 @@ footer{border-top:1px solid var(--line);padding:clamp(50px,8vh,88px) 0 44px;back
   <nav class="navlinks">
     <a class="g" href="bard-guide.html">Bard</a>
     <a class="r" href="dancer-guide.html">Dancer</a>
+    <a class="s" href="scholar-guide.html">Scholar</a>
   </nav>
 </header>
 
@@ -405,6 +422,23 @@ footer{border-top:1px solid var(--line);padding:clamp(50px,8vh,88px) 0 44px;back
         </div>
         <span class="go">Open the Dancer guide →</span>
       </a>
+
+      <a class="card s" href="scholar-guide.html">
+        <div class="glow" aria-hidden="true"></div>
+        <div>
+          <div class="idx">Guide 03 · Blue</div>
+          <h3>Scholar</h3>
+          <div class="sub">The Opener &amp; Rotation</div>
+          <p>An eleven-GCD opener built around one trade-off: every Aetherflow stack buys either damage or a heal, and three Energy Drains are worth less than a single Broil.</p>
+          <ul>
+            <li>The 11-GCD opener, weave by weave</li>
+            <li>The Aetherflow economy and Energy Drain rules</li>
+            <li>Biolysis clipping and the early refresh</li>
+            <li>The 1 / 2 / 3-minute cadence and healing ladder</li>
+          </ul>
+        </div>
+        <span class="go">Open the Scholar guide →</span>
+      </a>
     </div>
   </div>
 </section>
@@ -495,6 +529,7 @@ footer{border-top:1px solid var(--line);padding:clamp(50px,8vh,88px) 0 44px;back
       <span>Physical Ranged · Dawntrail 7.x · Level 100</span>
       <a class="b" href="bard-guide.html">Bard — The Resonance Archive →</a>
       <a class="d" href="dancer-guide.html">Dancer — The Ember Waltz →</a>
+      <a class="s" href="scholar-guide.html">Scholar — The Opener &amp; Rotation →</a>
     </div>
   </div>
 </footer>

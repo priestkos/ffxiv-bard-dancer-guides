@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scholar — Opener &amp; Rotation · Dawntrail</title>
+<style>
+:root{
+  --ink:#020611;
+  --ink2:#06112a;
+  --navy:#0b1c44;
+  --royal:#1d4ed8;
+  --blue:#3b82f6;
+  --sky:#60a5fa;
+  --glow:#93c5fd;
+  --ice:#dbeafe;
+  --paper:#e6eefc;
+  --dim:#7f93b8;
+  --line:rgba(96,165,250,.18);
+  --sans:"Segoe UI",system-ui,-apple-system,sans-serif;
+  --serif:Georgia,"Times New Roman",serif;
+  --mono:Consolas,"Cascadia Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--sans);font-size:16px;line-height:1.7;
+  background-image:radial-gradient(900px 500px at 85% -10%,rgba(29,78,216,.28),transparent 60%),
+  radial-gradient(700px 500px at -10% 30%,rgba(59,130,246,.14),transparent 60%);background-attachment:fixed}
+a{color:var(--glow);text-decoration:none}
+a:hover{color:#fff}
+.wrap{width:min(1100px,90vw);margin-inline:auto}
+code,.mono{font-family:var(--mono)}
+
+/* top bar */
+.topbar{position:sticky;top:0;z-index:20;background:rgba(2,6,17,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.topbar .wrap{display:flex;justify-content:space-between;align-items:center;padding:14px 0;gap:20px;flex-wrap:wrap}
+.brand{font-family:var(--mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--dim)}
+.brand b{color:var(--glow);font-weight:400}
+.toc{display:flex;gap:6px;flex-wrap:wrap}
+.toc a{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);
+  padding:7px 12px;border:1px solid transparent;border-radius:999px}
+.toc a:hover{color:var(--glow);border-color:var(--line)}
+
+/* hero */
+.hero{padding:clamp(70px,12vh,130px) 0 clamp(50px,8vh,80px);border-bottom:1px solid var(--line)}
+.kick{font-family:var(--mono);font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--sky);margin-bottom:18px}
+.hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(3rem,9vw,6.4rem);line-height:.92;letter-spacing:-.04em;margin:0 0 18px;
+  background:linear-gradient(120deg,#fff 10%,var(--glow) 55%,var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .role{font-family:var(--serif);font-style:italic;font-size:clamp(1.1rem,2vw,1.4rem);color:var(--ice);margin-bottom:22px}
+.hero p{max-width:66ch;color:#b6c6e3;font-size:1.02rem}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--line);border:1px solid var(--line);margin-top:40px}
+.stats div{background:var(--ink2);padding:18px 20px}
+.stats b{display:block;font-family:var(--serif);font-weight:400;font-size:1.8rem;color:var(--glow)}
+.stats span{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+section{padding:clamp(60px,9vh,100px) 0;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--sky);margin-bottom:10px}
+h2{font-family:var(--serif);font-weight:400;font-size:clamp(2rem,4.6vw,3.2rem);letter-spacing:-.02em;line-height:1.05;margin:0 0 18px;color:#fff}
+h3{font-family:var(--serif);font-weight:400;font-size:1.4rem;margin:30px 0 10px;color:var(--glow)}
+p{color:#c0cde6;max-width:72ch}
+.lede{font-size:1.05rem;color:#d3ddf2}
+strong{color:#fff;font-weight:600}
+
+/* callout */
+.callout{border-left:2px solid var(--blue);background:rgba(29,78,216,.1);padding:18px 22px;margin:26px 0;border-radius:0 8px 8px 0}
+.callout b{color:var(--glow)}
+
+/* timeline */
+.timeline{display:grid;gap:2px;background:var(--line);border:1px solid var(--line);margin:24px 0}
+.tl{display:grid;grid-template-columns:72px 1fr auto;gap:18px;background:var(--ink2);padding:14px 20px;align-items:center}
+.tl .g{font-family:var(--mono);font-size:12px;color:var(--sky);letter-spacing:.1em}
+.tl .act{color:#fff}
+.tl .act small{display:block;color:var(--dim);font-size:.82rem;margin-top:2px}
+.tl .tag{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;border-radius:999px;border:1px solid}
+.tag.dot{color:var(--glow);border-color:rgba(147,197,253,.4)}
+.tag.ogcd{color:#a5f3fc;border-color:rgba(165,243,252,.35)}
+.tag.dm{color:var(--ice);border-color:rgba(219,234,254,.3)}
+.tl.key{background:linear-gradient(90deg,rgba(29,78,216,.22),var(--ink2) 70%)}
+.tl.key .g{color:#fff}
+@media(max-width:600px){.tl{grid-template-columns:56px 1fr}.tl .tag{grid-column:2}}
+
+/* cards */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--line);border:1px solid var(--line)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--line);border:1px solid var(--line)}
+@media(max-width:860px){.grid3,.grid2{grid-template-columns:1fr}}
+.cell{background:var(--ink2);padding:26px}
+.cell h4{font-family:var(--serif);font-weight:400;font-size:1.2rem;margin:0 0 8px;color:#fff}
+.cell p{margin:0;font-size:.94rem;color:#b6c6e3}
+.cell .big{font-family:var(--serif);font-size:1.9rem;color:var(--glow);margin-bottom:4px}
+
+/* tables */
+table{width:100%;border-collapse:collapse;margin:20px 0;font-size:.92rem}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid rgba(96,165,250,.13);vertical-align:top}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--sky);font-weight:400;background:rgba(29,78,216,.08)}
+td{color:#c0cde6}
+td:first-child{color:#fff}
+.tablewrap{overflow-x:auto}
+
+/* weave bars */
+.bars{display:grid;gap:10px;margin:20px 0}
+.bar{display:grid;grid-template-columns:200px 1fr 64px;gap:14px;align-items:center;font-size:.9rem}
+.bar .lbl{color:#c0cde6}
+.bar .track{height:12px;background:rgba(96,165,250,.1);border-radius:999px;overflow:hidden}
+.bar .fill{height:100%;background:linear-gradient(90deg,var(--royal),var(--sky));border-radius:999px}
+.bar .val{font-family:var(--mono);font-size:12px;color:var(--glow);text-align:right}
+@media(max-width:600px){.bar{grid-template-columns:1fr;gap:4px}.bar .val{text-align:left}}
+
+/* quick ref */
+pre{background:#030a1f;border:1px solid var(--line);border-radius:10px;padding:20px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.6;color:#cfe0ff}
+
+footer{padding:50px 0 60px;background:var(--ink2);border-top:1px solid var(--line)}
+footer .wrap{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+.fmark{font-family:var(--serif);font-size:2.2rem;background:linear-gradient(100deg,var(--glow),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+.fmeta{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);text-align:right}
+.fmeta a{display:block;margin-top:6px}
+.note{font-size:.84rem;color:var(--dim);max-width:none}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html"><b>TWO PATHS</b> &nbsp;/&nbsp; SCH</a>
+    <nav class="toc">
+      <a href="#opener">Opener</a>
+      <a href="#resources">Resources</a>
+      <a href="#cadence">Cadence</a>
+      <a href="#healing">Healing</a>
+      <a href="#conflicts">Conflicts</a>
+      <a href="#sources">Sources</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="hero" id="top" style="border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <div class="kick">Final Fantasy XIV · Dawntrail · Level 100</div>
+    <h1>Scholar</h1>
+    <div class="role">The Opener &amp; Rotation, In Depth</div>
+    <p>A barrier healer with a deliberately thin damage kit. The opener is simple to learn. The job is in deciding every turn whether an Aetherflow stack buys damage or buys a heal. This page lays out the opener, the 1–2–3-minute cadence, and the trade-off the whole rotation hangs on.</p>
+    <div class="stats">
+      <div><b>320</b><span>Broil IV potency</span></div>
+      <div><b>85</b><span>Biolysis / 3s tick</span></div>
+      <div><b>3 : 1</b><span>Drain vs Broil cost</span></div>
+      <div><b>120s</b><span>Chain Stratagem</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OPENER ============ -->
+<section id="opener">
+  <div class="wrap">
+    <div class="eyebrow">01 · The Opener</div>
+    <h2>Eleven GCDs, one shape</h2>
+    <p class="lede">The opener is an 11-GCD sequence of Broil IV with Biolysis at each end. Its job is to put Biolysis at the start of the burst and refresh it on the final GCD so the DoT lands under raid buffs.</p>
+
+    <div class="timeline">
+      <div class="tl"><div class="g">−1.5s</div><div class="act">Broil IV (precast)<small>Cast completes as the boss becomes targetable</small></div><span class="tag dm">Damage</span></div>
+      <div class="tl"><div class="g">0.0s</div><div class="act">Grade 4 Gemdraught of Mind<small>Mash it — potions don't queue</small></div><span class="tag dm">Potion</span></div>
+      <div class="tl"><div class="g">GCD 1</div><div class="act">Biolysis<small>Weave: Dissipation (or Aetherflow)</small></div><span class="tag dot">DoT</span></div>
+      <div class="tl"><div class="g">GCD 2</div><div class="act">Broil IV</div><span class="tag dm">Filler</span></div>
+      <div class="tl key"><div class="g">GCD 3</div><div class="act">Broil IV<small>Weave: Chain Stratagem — opens the 2-minute window</small></div><span class="tag dot">Raid buff</span></div>
+      <div class="tl"><div class="g">GCD 4–6</div><div class="act">Broil IV<small>Weave: Energy Drain ×3</small></div><span class="tag ogcd">oGCD</span></div>
+      <div class="tl"><div class="g">GCD 7</div><div class="act">Broil IV<small>Weave: Aetherflow (or Dissipation) — refills to 3</small></div><span class="tag ogcd">oGCD</span></div>
+      <div class="tl key"><div class="g">GCD 8</div><div class="act">Broil IV<small>Weave: Baneful Impaction — 700 potency inside the buff</small></div><span class="tag dot">AoE DoT</span></div>
+      <div class="tl"><div class="g">GCD 9–10</div><div class="act">Broil IV<small>Weave: Energy Drain ×2 (new stacks, still inside buffs)</small></div><span class="tag ogcd">oGCD</span></div>
+      <div class="tl key"><div class="g">GCD 11</div><div class="act">Biolysis (early refresh)<small>Last GCD under buffs — the whole point of the shape</small></div><span class="tag dot">DoT</span></div>
+    </div>
+
+    <div class="callout"><b>Dissipation-first or Aetherflow-first.</b> Both are correct. Dissipation-first brings the faerie back about 15 seconds sooner, delays the 2,000 MP so less is wasted to overcap, and lines Aetherflow up for six Energy Drains at the two-minute window. Aetherflow-first is the flexible progression version: easier to cut drains, and easier to skip Dissipation entirely when the opening needs healing.</div>
+
+    <h3>Pre-pull and weave rules</h3>
+    <div class="grid3">
+      <div class="cell"><div class="big">1.5s</div><h4>Broil cast time</h4><p>One oGCD after each Broil with no clip. Instant GCDs (Biolysis, Art of War II) take two.</p></div>
+      <div class="cell"><div class="big">~0.5s</div><h4>Slidecast window</h4><p>Movement starts about half a second before the Broil cast ends. Ping-dependent.</p></div>
+      <div class="cell"><div class="big">Ruin II</div><h4>Last resort</h4><p>220 potency against Broil's 320. Use it only when you cannot slidecast or Swiftcast.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESOURCES ============ -->
+<section id="resources">
+  <div class="wrap">
+    <div class="eyebrow">02 · The Economy</div>
+    <h2>Aetherflow pays for everything</h2>
+    <p class="lede">Aetherflow is Scholar's only recurring MP source and its only oGCD healing budget. Energy Drain spends the same stacks, so every stack has two possible uses: damage or healing.</p>
+
+    <h3>The arithmetic that decides a stack</h3>
+    <div class="bars">
+      <div class="bar"><div class="lbl">Broil IV (1 GCD)</div><div class="track"><div class="fill" style="width:100%"></div></div><div class="val">320</div></div>
+      <div class="bar"><div class="lbl">Energy Drain ×3</div><div class="track"><div class="fill" style="width:94%"></div></div><div class="val">300</div></div>
+      <div class="bar"><div class="lbl">Energy Drain ×1</div><div class="track"><div class="fill" style="width:31%"></div></div><div class="val">100</div></div>
+    </div>
+    <div class="callout"><b>Three Energy Drains are 300 potency — less than one Broil IV.</b> If a drain forces you or your co-healer to cast a GCD heal, you lose 320 potency and 900 MP for the sake of a 100-potency oGCD. Drain only the stacks you are certain you will not need.</div>
+
+    <h3>Resource table</h3>
+    <div class="tablewrap">
+    <table>
+      <tr><th>Resource</th><th>Recast / value</th><th>Key rule</th></tr>
+      <tr><td>Aetherflow</td><td>60s · 3 stacks · 20% max MP (2,000)</td><td>Press on cooldown. Recasting at 3 stacks discards the new ones. Combat only.</td></tr>
+      <tr><td>Dissipation</td><td>180s · 3 stacks · +20% healing potency · 30s</td><td>Removes the faerie for 30s. Cannot be used while Seraph is summoned.</td></tr>
+      <tr><td>Energy Drain</td><td>100 potency · 1 stack · +10 faerie gauge</td><td>Spend it only on surplus stacks. It does not return MP.</td></tr>
+      <tr><td>Chain Stratagem</td><td>120s · 20s crit-rate buff · grants Impact Imminent (30s)</td><td>Fire on cooldown into the party's 2-minute window.</td></tr>
+      <tr><td>Baneful Impaction</td><td>140 / 3s × 5 = 700 total · 5y AoE</td><td>Requires Impact Imminent. Use right after Chain.</td></tr>
+    </table>
+    </div>
+
+    <h3>Spending priority for stacks</h3>
+    <p>Community priority order for stacks: <strong>Sacred Soil → Excogitation → Indomitability → Lustrate → Energy Drain.</strong> Reserve stacks for the healing your plan needs first. Whatever is left over is what you drain.</p>
+  </div>
+</section>
+
+<!-- ============ DOT & BURST ============ -->
+<section id="dot">
+  <div class="wrap">
+    <div class="eyebrow">03 · Damage</div>
+    <h2>Biolysis, clipping, and the burst</h2>
+    <p class="lede">Biolysis is a 30-second DoT ticking 85 potency every 3 seconds, 850 in total. Compared with a Broil IV GCD it only pays off when it will tick at least four times.</p>
+
+    <div class="tablewrap">
+    <table>
+      <tr><th>Time left on the target</th><th>Ticks</th><th>Potency</th><th>vs one Broil IV (320)</th></tr>
+      <tr><td>9s</td><td>3</td><td>255</td><td>−65</td></tr>
+      <tr><td>12s</td><td>4</td><td>340</td><td>+20 (break-even)</td></tr>
+      <tr><td>15s</td><td>5</td><td>425</td><td>+105</td></tr>
+      <tr><td>21s</td><td>7</td><td>595</td><td>+275</td></tr>
+      <tr><td>30s (full)</td><td>10</td><td>850</td><td>+530</td></tr>
+    </table>
+    </div>
+
+    <h3>The early refresh</h3>
+    <p>Raid buffs are now 20 seconds long, so clipping Biolysis on the final GCD of the buff window is a gain. It aligns future refreshes with the buff windows instead of leaving them in dead time. The payback is about two minutes of uptime with one extra raid buff, and about four minutes with none. At a 2.49–2.50 GCD, put the DoT on the same GCD as your sixth Energy Drain instead, or it will miss the Chain window.</p>
+
+    <h3>Multi-target thresholds</h3>
+    <div class="grid3">
+      <div class="cell"><div class="big">2 targets</div><h4>Art of War II wins</h4><p>360 potency against Broil's 320. Keep Biolysis on anything that will live at least 15s.</p></div>
+      <div class="cell"><div class="big">3–4 targets</div><h4>DoT threshold rises</h4><p>21s at 3 targets, 27s at 4. Past that, the DoT stops being worth casting.</p></div>
+      <div class="cell"><div class="big">5+ targets</div><h4>Skip the DoT</h4><p>Spam Art of War II and keep the Energy Drain window for the buff.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CADENCE ============ -->
+<section id="cadence">
+  <div class="wrap">
+    <div class="eyebrow">04 · Cadence</div>
+    <h2>The 1, 2, and 3-minute loop</h2>
+    <p class="lede">After the opener, Scholar runs a fixed loop: Aetherflow every minute, Chain Stratagem and Baneful Impaction every two minutes, and Dissipation every three. Energy Drain fits in only where it is free.</p>
+
+    <pre>0:00  Dissipation (3 stacks)      ── first Aetherflow stacks of the cycle
+0:60  Aetherflow (3 stacks)       ── spend over the next minute
+2:00  Aetherflow + Chain Stratagem + Baneful Impaction  ← the real burst
+3:00  Dissipation (3 stacks)      ── every other two-minute window
+      Biolysis every 30s          ── refresh with 0–3s left, never drop it
+      Broil IV in every other GCD ── this is most of the job</pre>
+
+    <div class="grid2">
+      <div class="cell"><h4>Six-drain buff window</h4><p>When the odd minute leaves stacks unspent, carry them into the two-minute window for six drains (600 potency inside the buff). That costs nothing only if the stacks were not needed for healing.</p></div>
+      <div class="cell"><h4>Dissipation grid</h4><p>0 / 3 / 6 minutes lines up with every burst. 0 / 4 / 7 moves it onto a heavy healing phase. Decide which phases need the faerie and which need three more drains.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HEALING ============ -->
+<section id="healing">
+  <div class="wrap">
+    <div class="eyebrow">05 · Healing</div>
+    <h2>The ladder: free, then Aetherflow, then GCD</h2>
+    <p class="lede">Scholar's healing is ordered by what each option costs in damage. Use the cheapest option that covers the mechanic.</p>
+
+    <div class="tablewrap">
+    <table>
+      <tr><th>Tier</th><th>Examples</th><th>Damage cost</th></tr>
+      <tr><td>Free oGCD</td><td>Whispering Dawn, Fey Blessing, Fey Illumination, Summon Seraph + Consolation, Protraction</td><td>0 potency</td></tr>
+      <tr><td>Aetherflow oGCD</td><td>Sacred Soil, Indomitability, Excogitation, Lustrate</td><td>100 potency each (one drain's worth)</td></tr>
+      <tr><td>GCD heal</td><td>Adloquium, Concitation, Physick, Manifestation, Accession</td><td>320 potency (one Broil) plus MP</td></tr>
+    </table>
+    </div>
+
+    <h3>Burst-healing combo</h3>
+    <p>Protraction, then a critical Adloquium, then Deployment Tactics. Protraction adds 10% to the shield and to the healing received. Deployment Tactics spreads the Galvanize half to the party, not the Catalyze half.</p>
+
+    <h3>Shield and healing notes</h3>
+    <div class="grid2">
+      <div class="cell"><h4>Sacred Soil is not a shield</h4><p>It is 10% damage reduction plus a regen (after level 78). Plan it as mitigation, not as shield HP.</p></div>
+      <div class="cell"><h4>Recitation</h4><p>Removes the resource cost of Adloquium, Concitation, Indomitability, and Excogitation, and guarantees a crit. Preferred order: Indomitability (raid) → Excogitation (tank) → Adloquium (safety).</p></div>
+      <div class="cell"><h4>Seraphism</h4><p>180s. Converts Adloquium to Manifestation and Concitation to Accession. Emergency Tactics recasts in 1 second. Lodestone lists it as incompatible with Dissipation.</p></div>
+      <div class="cell"><h4>Fairy ghosting</h4><p>Summoning Seraph or pressing Dissipation discards any queued fairy command. Sequence fairy actions before the summon, not after.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONFLICTS ============ -->
+<section id="conflicts">
+  <div class="wrap">
+    <div class="eyebrow">06 · Verification</div>
+    <h2>What the sources disagree on</h2>
+    <p class="lede">These are the points where the sources conflict, or where a claim has no support in the Lodestone entry. They are listed rather than settled.</p>
+
+    <div class="tablewrap">
+    <table>
+      <tr><th>Question</th><th>What we found</th></tr>
+      <tr><td>Chain Stratagem on GCD 2 or 3?</td><td>Icy Veins (7.55 text) says GCD 2. The Balance's 7.4 diagram says GCD 3. Both produce the same eight-GCD window ending in the early refresh. Match your group's buff timer.</td></tr>
+      <tr><td>Broil IV 310 or 320?</td><td>320 since 7.3. Older pages still say 310.</td></tr>
+      <tr><td>Three drains vs one Broil</td><td>300 vs 320. One popular video calls drains "slightly stronger" — the arithmetic says otherwise.</td></tr>
+      <tr><td>Dissipation cooldown</td><td>180s live. A widely shared rework proposal listed 120s — it was a suggestion, not a patch.</td></tr>
+      <tr><td>Dissipation ends Seraphism?</td><td>Not stated on the Lodestone entry. Unverified.</td></tr>
+      <tr><td>Recitation with Seraphism?</td><td>Not stated on the Lodestone entry. An earlier draft said they were blocked; that claim is removed as unverified.</td></tr>
+      <tr><td>Two Scholars' Chain Stratagem</td><td>Stacking not stated on the Lodestone entry. Coordinate with your co-healer.</td></tr>
+    </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SOURCES ============ -->
+<section id="sources">
+  <div class="wrap">
+    <div class="eyebrow">07 · Sources</div>
+    <h2>Where the numbers come from</h2>
+    <p class="lede">Lodestone is authoritative for potencies, recasts, and effects. The community sources cover how to play. Where the two disagree, the Lodestone value wins.</p>
+    <div class="grid2">
+      <div class="cell"><h4>Official</h4><p><a href="https://na.finalfantasyxiv.com/jobguide/scholar/">Lodestone — Job Guide: Scholar</a></p></div>
+      <div class="cell"><h4>Guides</h4><p><a href="https://www.thebalanceffxiv.com/jobs/healers/scholar/openers/">The Balance — Openers</a> · <a href="https://www.icy-veins.com/ffxiv/scholar-dps-rotation-for-healers">Icy Veins — DPS Rotation</a> · <a href="https://www.icy-veins.com/ffxiv/scholar-pve-healing-rotation-ability-priority">Icy Veins — Healing</a></p></div>
+      <div class="cell"><h4>Video</h4><p><a href="https://www.youtube.com/watch?v=jat9lM2OW9Y">Rinon — Scholar Lv100 Guide</a> · <a href="https://www.youtube.com/watch?v=hp-uUDYskVY">Megastar — Idiot's Guide to SCHOLAR</a></p></div>
+      <div class="cell"><h4>Discussion</h4><p>r/ffxivdiscussion threads on Energy Drain optimisation and Dissipation planning; Square Enix forum threads on Dissipation's design.</p></div>
+    </div>
+    <p class="note" style="margin-top:28px">Patch 7.55 values as of 10 Oct 2026. Full write-up with citations: <code>Scholar_Opener_and_Rotation_Guide.md</code> in the repo root.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fmark">Scholar</div>
+    <div class="fmeta">
+      <span>Physical · Healer · Dawntrail 7.x · Level 100</span>
+      <a href="index.html">← Back to Two Paths</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
