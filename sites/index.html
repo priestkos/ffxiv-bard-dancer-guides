@@ -27,7 +27,6 @@
   --sans:"Segoe UI",system-ui,-apple-system,sans-serif;
   --serif:Georgia,"Times New Roman",serif;
   --mono:Consolas,"Cascadia Mono",ui-monospace,monospace;
-  --split:50%;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -64,15 +63,21 @@ a{color:inherit;text-decoration:none}
 .half{position:absolute;top:0;bottom:0;display:flex;flex-direction:column;justify-content:flex-end;
   padding:0 clamp(20px,4vw,54px) clamp(40px,8vh,74px);transition:width .55s cubic-bezier(.2,.8,.2,1),
   left .55s cubic-bezier(.2,.8,.2,1);overflow:hidden}
-.half.left{left:0;width:var(--split);background:
+.half.left{left:0;width:33.334%;background:
   radial-gradient(70% 70% at 82% 78%, rgba(47,191,113,.28), transparent 62%),
   linear-gradient(180deg,var(--b-deep),#020a06)}
-.half.right{left:var(--split);right:0;background:
+.half.right{left:33.334%;width:33.333%;background:
   radial-gradient(70% 70% at 18% 78%, rgba(224,50,74,.30), transparent 62%),
   linear-gradient(180deg,var(--d-deep),#0a0203)}
+.half.third{left:66.667%;right:0;background:
+  radial-gradient(70% 70% at 82% 78%, rgba(59,130,246,.30), transparent 62%),
+  linear-gradient(180deg,#020a22,#01040f)}
 .half .art{position:absolute;inset:0;opacity:.85;pointer-events:none}
 .half.left .art{display:grid;place-items:center}
 .half.right .art{display:grid;place-items:center}
+.half.third .art{display:grid;place-items:center}
+.sr{fill:none;stroke:rgba(147,197,253,.20)}
+.sr.b{stroke:rgba(59,130,246,.5)}
 .half .art svg{width:min(120vh,120vw);height:min(120vh,120vw)}
 .hr{fill:none;stroke:rgba(125,255,180,.20)}
 .hr.b{stroke:rgba(47,191,113,.45)}
@@ -84,41 +89,42 @@ a{color:inherit;text-decoration:none}
 .dashA{stroke-dasharray:14 240;animation:trace 10s linear infinite}
 .dashB{stroke-dasharray:10 300;animation:trace 15s linear infinite reverse}
 @keyframes trace{to{stroke-dashoffset:-254}}
-.half .inner{position:relative;z-index:2;max-width:min(520px,44vw)}
+.half .inner{position:relative;z-index:2;max-width:min(520px,30vw)}
 @media(max-width:900px){.half .inner{max-width:none}}
 .half .tagline{font-family:var(--mono);font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;margin-bottom:14px}
 .half.left .tagline{color:var(--b-emerald)}
 .half.right .tagline{color:var(--d-scarlet)}
+.half.third .tagline{color:#60a5fa}
 .half h2{font-family:var(--serif);font-weight:400;margin:0 0 10px;font-size:clamp(2.4rem,6vw,4.6rem);
   line-height:.95;letter-spacing:-.03em}
 .half.left h2{background:linear-gradient(160deg,#fff,var(--b-mist) 40%,var(--b-emerald));
   -webkit-background-clip:text;background-clip:text;color:transparent}
 .half.right h2{background:linear-gradient(160deg,#fff,var(--d-warm) 40%,var(--d-scarlet));
   -webkit-background-clip:text;background-clip:text;color:transparent}
+.half.third h2{background:linear-gradient(160deg,#fff,#dbeafe 40%,#3b82f6);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
 .half .role{font-family:var(--serif);font-style:italic;font-size:clamp(1rem,1.7vw,1.25rem);margin-bottom:12px}
 .half.left .role{color:var(--b-mist)}
 .half.right .role{color:var(--d-warm)}
+.half.third .role{color:#dbeafe}
 .half p{color:var(--dim);font-size:.95rem;margin:0 0 22px;max-width:46ch}
 .half.left p{color:#b8d6c4}
 .navlinks a.g,.navlinks a.r{color:#c9cbc9}
 .navlinks a.g:hover{color:var(--b-glow);border-color:rgba(47,191,113,.5)}
 .navlinks a.r:hover{color:var(--d-glow);border-color:rgba(224,50,74,.5)}
 .half.right p{color:#d7a8b1}
+.half.third p{color:#b6c6e3}
 .cta{display:inline-flex;align-items:center;gap:12px;font-family:var(--mono);font-size:11px;
   letter-spacing:.24em;text-transform:uppercase;padding:13px 22px;border:1px solid;border-radius:999px;transition:.3s}
 .half.left .cta{border-color:rgba(47,191,113,.45);color:var(--b-glow)}
 .half.left:hover .cta{background:rgba(47,191,113,.14);border-color:var(--b-glow)}
 .half.right .cta{border-color:rgba(224,50,74,.45);color:var(--d-glow)}
 .half.right:hover .cta{background:rgba(224,50,74,.16);border-color:var(--d-glow)}
+.half.third .cta{border-color:rgba(59,130,246,.5);color:#93c5fd}
+.half.third:hover .cta{background:rgba(59,130,246,.16);border-color:#93c5fd}
 .cta .arw{transition:transform .3s}
 .half:hover .cta .arw{transform:translateX(5px)}
 
-.seam{position:absolute;top:0;bottom:0;left:var(--split);width:1px;z-index:4;pointer-events:none;
-  transition:left .55s cubic-bezier(.2,.8,.2,1);
-  background:linear-gradient(180deg,transparent,rgba(255,255,255,.34),transparent);
-  box-shadow:0 0 44px 7px rgba(255,255,255,.09)}
-.seam::after{content:"";position:absolute;left:-60px;right:-60px;top:0;bottom:0;
-  background:linear-gradient(90deg,transparent,rgba(125,255,180,.15) 40%,transparent 49%,transparent 51%,rgba(255,147,166,.15) 60%,transparent)}
 
 .hero-title{position:absolute;inset:0;z-index:5;display:grid;place-items:center;
   pointer-events:none;text-align:center;padding:0 18px}
@@ -140,7 +146,7 @@ a{color:inherit;text-decoration:none}
 @media(max-width:900px){
   .hero{min-height:auto}
   .half{position:relative;left:auto!important;width:auto!important;min-height:64svh;padding-top:120px}
-  .half.right{left:auto}
+  .half.right,.half.third{left:auto}
   .seam{display:none}
   .hero-title{position:relative;padding:60px 18px 40px;inset:auto;order:-1}
   .hero{display:flex;flex-direction:column}
@@ -311,7 +317,7 @@ footer{border-top:1px solid var(--line);padding:clamp(50px,8vh,88px) 0 44px;back
 <div class="progress" id="prog"></div>
 
 <header class="topbar" id="bar">
-  <a class="brand" href="#top"><span>✦</span><b>TWO&nbsp;PATHS</b><span>BRD&nbsp;/&nbsp;DNC</span></a>
+  <a class="brand" href="#top"><span>✦</span><b>THREE&nbsp;PATHS</b><span>BRD&nbsp;/&nbsp;DNC</span></a>
   <nav class="navlinks">
     <a class="g" href="bard-guide.html">Bard</a>
     <a class="r" href="dancer-guide.html">Dancer</a>
@@ -364,21 +370,39 @@ footer{border-top:1px solid var(--line);padding:clamp(50px,8vh,88px) 0 44px;back
     </div>
   </a>
 
-  <div class="seam" id="seam" aria-hidden="true"></div>
+  <a class="half third" href="scholar-guide.html" aria-label="Scholar — The Opener &amp; Rotation">
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 400 400">
+        <g class="spin">
+          <circle class="sr" cx="200" cy="200" r="70"/>
+          <circle class="sr b" cx="200" cy="200" r="118" stroke-dasharray="6 10"/>
+          <circle class="sr" cx="200" cy="200" r="168"/>
+        </g>
+        <g class="spin r">
+          <circle class="sr b" cx="200" cy="200" r="140" stroke-dasharray="2 9"/>
+        </g>
+      </svg>
+    </div>
+    <div class="inner">
+      <div class="tagline">03 · Blue</div>
+      <h2>Scholar</h2>
+      <div class="role">The Opener &amp; Rotation</div>
+      <p>A barrier healer with a deliberately thin kit. Every Aetherflow stack is spent on damage or a heal, and the choice is the job.</p>
+      <span class="cta">Enter the Opener <span class="arw">→</span></span>
+    </div>
+  </a>
 
   <div class="hero-title">
     <div class="box">
       <div class="kick">Final Fantasy XIV · Dawntrail 7.x</div>
-      <h1><span class="w g">Two</span><span class="w r">Paths</span></h1>
-      <div class="sub">The complete physical ranged guides</div>
+      <h1><span class="w g">Three</span><span class="w r">Paths</span></h1>
     </div>
   </div>
-  <div class="hint" id="hint">Move across the seam</div>
 </section>
 
 <div class="band" aria-hidden="true">
   <div class="marquee" id="mq">
-    <span class="g">Stormbite</span><span class="r">Technical Finish</span><span class="g">Iron Jaws</span><span class="r">Devilment</span><span class="g">Radiant Finale</span><span class="r">Dance of the Dawn</span><span class="g">Empyreal Arrow</span><span class="r">Finishing Move</span><span class="g">Resonant Arrow</span><span class="r">Last Dance</span><span class="g">Barrage</span><span class="r">Saber Dance</span><span class="g">Pitch Perfect</span><span class="r">Starfall Dance</span><span class="g">Apex Arrow</span><span class="r">Tillana</span><span class="s">Biolysis</span><span class="s">Aetherflow</span><span class="s">Broil</span><span class="s">Energy Drain</span><span class="s">Dissipation</span><span class="s">Chain Stratagem</span><span class="s">Adloquium</span><span class="s">Recitation</span><span class="s">Sacred Soil</span><span class="s">Art of War</span>
+    <span class="s">Biolysis</span><span class="g">Stormbite</span><span class="r">Technical Finish</span><span class="s">Aetherflow</span><span class="g">Iron Jaws</span><span class="r">Devilment</span><span class="s">Broil</span><span class="g">Radiant Finale</span><span class="r">Dance of the Dawn</span><span class="s">Energy Drain</span><span class="g">Empyreal Arrow</span><span class="r">Finishing Move</span><span class="s">Dissipation</span><span class="s">Chain Stratagem</span><span class="g">Resonant Arrow</span><span class="r">Last Dance</span><span class="s">Adloquium</span><span class="g">Barrage</span><span class="r">Saber Dance</span><span class="s">Recitation</span><span class="g">Pitch Perfect</span><span class="r">Starfall Dance</span><span class="s">Sacred Soil</span><span class="g">Apex Arrow</span><span class="r">Tillana</span><span class="s">Art of War</span>
   </div>
 </div>
 
@@ -569,21 +593,6 @@ footer{border-top:1px solid var(--line);padding:clamp(50px,8vh,88px) 0 44px;back
     }, {threshold:0.12, rootMargin:"0px 0px -8% 0px"});
     rvs.forEach(function(el,i){ el.style.transitionDelay = ((i%3)*80)+"ms"; io.observe(el); });
   } else { rvs.forEach(function(el){ el.classList.add("in"); }); }
-
-  /* pointer-driven seam — desktop only, disabled for reduced motion */
-  var hero = document.querySelector(".hero"), hint = document.getElementById("hint");
-  if (hero && !reduce && window.matchMedia("(pointer:fine)").matches && window.innerWidth > 900){
-    hero.addEventListener("pointermove", function(ev){
-      var r = hero.getBoundingClientRect();
-      var x = ((ev.clientX - r.left) / r.width) * 100;
-      x = Math.max(34, Math.min(66, x));
-      hero.style.setProperty("--split", x.toFixed(2) + "%");
-      if (hint) hint.style.opacity = "0";
-    });
-    hero.addEventListener("pointerleave", function(){
-      hero.style.setProperty("--split", "50%");
-    });
-  }
 
   /* marquee seamless */
   var mq = document.getElementById("mq");
