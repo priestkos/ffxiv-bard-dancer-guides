@@ -237,14 +237,17 @@ section.blk{padding:clamp(80px,12vh,140px) 0;position:relative}
 .tc p{margin:0;color:#c0c2c0;font-size:.94rem}
 
 /* contents comparison */
-.two{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--line);border:1px solid var(--line)}
+.two{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;background:var(--line);border:1px solid var(--line)}
+@media(max-width:1100px){.two{grid-template-columns:1fr 1fr}}
 @media(max-width:880px){.two{grid-template-columns:1fr}}
 .two .col{background:var(--ink2);padding:clamp(26px,3vw,40px)}
 .two .col.b{border-top:2px solid var(--b-emerald)}
 .two .col.d{border-top:2px solid var(--d-scarlet)}
+.two .col.s{border-top:2px solid #3b82f6}
 .two h3{margin:0 0 20px;font-family:var(--serif);font-weight:400;font-size:1.5rem}
 .two .col.b h3{color:var(--b-glow)}
 .two .col.d h3{color:var(--d-glow)}
+.two .col.s h3{color:#93c5fd}
 .two ul{list-style:none;margin:0;padding:0;display:grid;gap:0}
 .two li{padding:12px 0 12px 26px;position:relative;border-bottom:1px solid rgba(255,255,255,.07);
   font-size:.92rem;color:#c0c2c0}
@@ -252,6 +255,7 @@ section.blk{padding:clamp(80px,12vh,140px) 0;position:relative}
 .two li::before{position:absolute;left:0;top:12px;font-family:var(--mono);font-size:10px}
 .two .col.b li::before{content:"◆";color:var(--b-emerald)}
 .two .col.d li::before{content:"◆";color:var(--d-scarlet)}
+.two .col.s li::before{content:"◆";color:#3b82f6}
 .two li b{color:var(--paper);font-weight:400}
 
 /* pull quote */
@@ -385,7 +389,7 @@ footer{border-top:1px solid var(--line);padding:clamp(50px,8vh,88px) 0 44px;back
       <div class="num">01</div>
       <div>
         <h2>Choose a Path</h2>
-        <p class="lede">Two jobs, one role, opposite instincts. Bard rewards rigid timer discipline and a single perfectly-timed snapshot. Dancer rewards resource hoarding and a twenty-second detonation. Both are strongest when the person behind them has stopped thinking about the buttons.</p>
+        <p class="lede">Three jobs, three roles, three instincts. Bard rewards rigid timer discipline and a single perfectly-timed snapshot. Dancer rewards resource hoarding and a twenty-second detonation. Scholar rewards resource discipline and knowing when to spend a stack on damage or a heal. All three are strongest when the person behind them has stopped thinking about the buttons.</p>
       </div>
     </div>
 
@@ -451,7 +455,7 @@ footer{border-top:1px solid var(--line);padding:clamp(50px,8vh,88px) 0 44px;back
       <div class="num">02</div>
       <div>
         <h2>The Shared Inheritance</h2>
-        <p class="lede">Everything Bard and Dancer have in common comes from being Physical Ranged: no cast times, total freedom of movement, and a two-minute raid buff that other jobs plan their own bursts around.</p>
+        <p class="lede">Bard and Dancer share a foundation from being Physical Ranged: no cast times, total freedom of movement, and a two-minute raid buff that other jobs plan their own bursts around. Scholar shares the two-minute spine as a healer, with Chain Stratagem as its raid contribution.</p>
       </div>
     </div>
 
@@ -459,17 +463,17 @@ footer{border-top:1px solid var(--line);padding:clamp(50px,8vh,88px) 0 44px;back
       <div class="tc">
         <div class="ix">Movement</div>
         <h4>Nothing stops you casting</h4>
-        <p>Neither job has a cast time. You reposition through mechanics without losing a single GCD — which means the only excuse for a dropped global is your own attention.</p>
+        <p>Bard and Dancer have no cast times. Scholar's Biolysis and Art of War are instant too, so across all three jobs you can reposition through mechanics without losing a single GCD. The only excuse for a dropped global is your own attention.</p>
       </div>
       <div class="tc">
         <div class="ix">Cadence</div>
         <h4>A 120-second spine</h4>
-        <p>Both live on the two-minute cycle: Bard's Raging Strikes and Radiant Finale, Dancer's Technical Finish and Devilment. The rest of the job exists to feed that window.</p>
+        <p>All three live on the two-minute cycle: Bard's Raging Strikes and Radiant Finale, Dancer's Technical Finish and Devilment, Scholar's Chain Stratagem. The rest of each job exists to feed that window.</p>
       </div>
       <div class="tc">
         <div class="ix">Contribution</div>
         <h4>Paid in other people's damage</h4>
-        <p>Both carry low personal ceilings and unmatched raid buffs. Your parse lives and dies on how well the party converts the window you hand them.</p>
+        <p>Each carries a low personal ceiling and a raid buff. Your parse lives and dies on how well the party converts the window you hand them.</p>
       </div>
     </div>
   </div>
@@ -510,14 +514,21 @@ footer{border-top:1px solid var(--line);padding:clamp(50px,8vh,88px) 0 44px;back
           <li><b>Gearing &amp; utility</b> — stat ladder, Ultimate syncs, raid mitigation</li>
         </ul>
       </div>
+      <div class="col s">
+        <h3>Scholar — Opener &amp; Rotation</h3>
+        <ul>
+          <li><b>Executive summary</b> — one DoT, one filler, one AoE, one oGCD nuke, one raid buff</li>
+          <li><b>Aetherflow economy</b> — Energy Drain as release valve, Dissipation's healing-shaped cost</li>
+          <li><b>Chain Stratagem</b> — the raid contribution and Baneful Impaction</li>
+          <li><b>DoT theory</b> — Biolysis, clipping, and the early refresh</li>
+          <li><b>The Level 100 opener</b> — pre-pull, timeline, and the Chain Stratagem placement</li>
+          <li><b>The 1 / 2 / 3-minute cadence</b> — steady state and the six-Energy-Drain window</li>
+          <li><b>Priority systems</b> — single target, multi-target, weaving quick reference</li>
+          <li><b>The healing layer</b> — priority ladder and the burst-healing combo</li>
+          <li><b>Gear, patches &amp; practice</b> — quick-reference card and level-sync floors</li>
+        </ul>
+      </div>
     </div>
-  </div>
-</section>
-
-<!-- ============ QUOTE ============ -->
-<section class="blk">
-  <div class="wrap">
-    <p class="pull rv">One job asks you to hold a <span class="g">timer</span>. The other asks you to hold your <span class="r">nerve</span>. Pick the one whose failure mode you can live with.</p>
   </div>
 </section>
 
@@ -527,8 +538,7 @@ footer{border-top:1px solid var(--line);padding:clamp(50px,8vh,88px) 0 44px;back
   <div class="wrap fgrid">
     <div class="fmark">Three Paths</div>
     <div class="fmeta">
-      <span>Physical Ranged · Dawntrail 7.x · Level 100</span>
-      <a class="b" href="bard-guide.html">Bard — The Resonance →</a>
+            <a class="b" href="bard-guide.html">Bard — The Resonance →</a>
       <a class="d" href="dancer-guide.html">Dancer — The Ember Waltz →</a>
       <a class="s" href="scholar-guide.html">Scholar — The Opener &amp; Rotation →</a>
     </div>
