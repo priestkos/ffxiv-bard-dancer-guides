@@ -36,6 +36,8 @@ break when a remote host goes down.
 
 ## Viewing
 
+GitHub Pages serves a custom [`sites/404.html`](sites/404.html) for missing URLs.
+
 Open `index.html` directly in a browser, or serve the folder:
 
 ```bash
