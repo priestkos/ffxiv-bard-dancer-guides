@@ -15,6 +15,7 @@ break when a remote host goes down.
 | [`index.html`](index.html) | Green + red diptych | Landing page. Pick a path; the seam follows the pointer. |
 | [`sites/bard-guide.html`](sites/bard-guide.html) | Shades of green | **Bard — The Resonance.** Core mechanics, the 11-GCD opener, the song cycle, 3-6-9 vs 3-3-12, priority ladders, AoE swaps, level-sync floors. |
 | [`sites/dancer-guide.html`](sites/dancer-guide.html) | Shades of red | **Dancer — The Ember Waltz.** Dance steps and the 1.5s weave lock, the Level 90–100 kit, the −15.5s pre-pull and burst table, the 30/60/120 cadence, the nine-rank filler matrix, Dance Partner tiers, gearing and raid utility. |
+| [`sites/scholar/`](sites/scholar/) | Dark neutral | **Scholar — Five Machines.** Interactive isometric figures for Deployment Tactics, Aetherflow, Faerie Gauge, Summon Seraph, and Chain Stratagem. |
 
 ## Design notes
 
@@ -44,4 +45,6 @@ index.html              landing page (green/red diptych)
 sites/
   bard-guide.html       Bard — The Resonance
   dancer-guide.html     Dancer — The Ember Waltz
+  scholar/
+    index.html          Scholar — Five Machines (interactive mechanics)
 ```
